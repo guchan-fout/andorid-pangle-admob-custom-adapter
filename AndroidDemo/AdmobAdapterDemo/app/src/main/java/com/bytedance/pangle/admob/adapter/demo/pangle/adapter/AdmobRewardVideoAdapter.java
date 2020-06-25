@@ -29,11 +29,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Adapter for reward video, please set this with package name on Admob
  */
+@SuppressWarnings("unused")
 public class AdmobRewardVideoAdapter extends Adapter implements MediationRewardedAd {
 
     private static final String ADAPTER_NAME = "AdmobRewardVideoAdapter";
     private static final String SLOT_ID = "slotID";
-    private MediationAdLoadCallback mAdmobAdLoadCallback;
+    private MediationAdLoadCallback<MediationRewardedAd, MediationRewardedAdCallback> mAdmobAdLoadCallback;
     private MediationRewardedAdCallback mAdmobRewardedAdCallback;
     private TTRewardVideoAd mttRewardVideoAd;
     private AtomicBoolean isLoadSuccess = new AtomicBoolean(false);
@@ -123,7 +124,7 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
             mttRewardVideoAd = ttRewardVideoAd;
             mttRewardVideoAd.setRewardAdInteractionListener(TikTokRewardedInteractiveListener);
             if (mAdmobAdLoadCallback != null) {
-                mAdmobRewardedAdCallback = (MediationRewardedAdCallback) mAdmobAdLoadCallback.onSuccess(AdmobRewardVideoAdapter.this);
+                mAdmobRewardedAdCallback = mAdmobAdLoadCallback.onSuccess(AdmobRewardVideoAdapter.this);
             }
         }
 
@@ -214,16 +215,17 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
         if (serverParameters != null) {
             try {
                 String jsonParams = serverParameters.getString("parameter");
-                try {
-                    JSONObject jsonObject = new JSONObject(jsonParams);
-                    if (jsonObject != null) {
+                if (jsonParams != null) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(jsonParams);
                         if (jsonObject.has(SLOT_ID)) {
                             return jsonObject.getString(SLOT_ID);
                         }
+                    } catch (Throwable t) {
+                        Log.e(ADAPTER_NAME, "Could not parse malformed JSON: " + jsonParams);
                     }
-                } catch (Throwable t) {
-                    Log.e(ADAPTER_NAME, "Could not parse malformed JSON: " + jsonParams);
                 }
+
             } catch (Exception e) {
                 Log.e(ADAPTER_NAME, "loadRewardedAd() exception: " + e);
             }
