@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        val list = arrayOf("Reward Video", "Banner", "Interstitial")
+        val list = arrayOf("Reward Video", "Native", "Interstitial")
         val adapter = RecyclerAdapter(list)
         val layoutManager = LinearLayoutManager(this)
 
@@ -72,7 +72,8 @@ class MainActivity : AppCompatActivity() {
                         startActivity(intent)
                     }
                     1 -> {
-                        loadBannerAd()
+                        val intent = Intent(this@MainActivity, NativeAdActivity::class.java)
+                        startActivity(intent)
                     }
                     2 -> {
                     }
@@ -81,48 +82,5 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-    }
-
-
-    fun loadBannerAd() {
-        mAdView = findViewById(R.id.ad_view)
-        val adRequest = AdRequest.Builder().build()
-
-
-        mAdView.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                Timber.d("onAdLoaded")
-            }
-
-            override fun onAdFailedToLoad(errorCode: Int) {
-                // Code to be executed when an ad request fails.
-                Timber.d("onAdFailedToLoad ${errorCode}")
-            }
-
-            override fun onAdOpened() {
-                // Code to be executed when an ad opens an overlay that
-                // covers the screen.
-                Timber.d("onAdOpened")
-            }
-
-            override fun onAdClicked() {
-                // Code to be executed when the user clicks on an ad.
-                Timber.d("onAdClicked")
-
-            }
-
-            override fun onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-                Timber.d("onAdLeftApplication")
-            }
-
-            override fun onAdClosed() {
-                // Code to be executed when the user is about to return
-                // to the app after tapping on an ad.
-                Timber.d("onAdClosed")
-            }
-        }
-
-        mAdView.loadAd(adRequest)
     }
 }

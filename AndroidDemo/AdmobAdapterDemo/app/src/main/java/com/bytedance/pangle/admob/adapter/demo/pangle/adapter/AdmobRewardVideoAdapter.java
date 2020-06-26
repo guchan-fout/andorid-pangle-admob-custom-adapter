@@ -174,10 +174,17 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
         TTAdManager mTTAdManager = TTAdSdk.getAdManager();
         TTAdNative mTTAdNative = mTTAdManager.createAdNative(context.getApplicationContext());
 
+        Bundle extras = mediationRewardedAdConfiguration.getMediationExtras();
+        if (extras != null && extras.containsKey("gdpr")) {
+            int gdpr = extras.getInt("gdpr", 1);
+            mTTAdManager.setGdpr(gdpr);
+            Log.e(ADAPTER_NAME, "AdmobFeedAdAdapter->feed native ad receive gdpr=" + gdpr);
+        }
+
         AdSlot adSlot = new AdSlot.Builder()
                 .setCodeId(adslotID)
                 .setSupportDeepLink(true)
-                .setImageAcceptedSize(1080, 1920)
+                .setImageAcceptedSize(1080, 1920) //Set size to fit your ad slot size
                 .setRewardName("your reward's name") //Parameter for rewarded video ad requests, name of the reward
                 .setRewardAmount(1)  // The number of rewards in rewarded video ad
                 .setUserID("your app user id")//User ID, a required parameter for rewarded video ads
