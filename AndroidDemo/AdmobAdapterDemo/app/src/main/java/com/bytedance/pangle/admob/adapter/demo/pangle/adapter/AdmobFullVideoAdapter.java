@@ -31,10 +31,10 @@ public class AdmobFullVideoAdapter implements CustomEventInterstitial {
 
     private TTFullScreenVideoAd mttFullVideoAd;
 
-    private CustomEventInterstitialListener admobAdListener;
-    private Context context;
+    private CustomEventInterstitialListener mAdmobAdListener;
+    private Context mContext;
 
-    private AtomicBoolean isLoadSuccess = new AtomicBoolean(false);
+    private AtomicBoolean mIsLoadSuccess = new AtomicBoolean(false);
 
 
     @Override
@@ -44,8 +44,8 @@ public class AdmobFullVideoAdapter implements CustomEventInterstitial {
                                       MediationAdRequest mediationAdRequest,
                                       Bundle customEventExtras) {
 
-        this.context = context;
-        this.admobAdListener = listener;
+        this.mContext = context;
+        this.mAdmobAdListener = listener;
         //obtain ad placement_id from admob server
         mSlotID = getSlotId(serverParameter);
         Log.e("PlacementId:", mSlotID);
@@ -66,8 +66,10 @@ public class AdmobFullVideoAdapter implements CustomEventInterstitial {
 
     @Override
     public void showInterstitial() {
-        if (mttFullVideoAd != null && isLoadSuccess.get()) {
-            this.mttFullVideoAd.showFullScreenVideoAd((Activity) this.context);
+        if (mttFullVideoAd != null && mIsLoadSuccess.get()) {
+            this.mttFullVideoAd.showFullScreenVideoAd((Activity) this.mContext);
+        } else {
+            Log.e(ADAPTER_NAME,"Ad not loaded.");
         }
     }
 
@@ -75,40 +77,40 @@ public class AdmobFullVideoAdapter implements CustomEventInterstitial {
 
         @Override
         public void onError(int i, String s) {
-            isLoadSuccess.set(false);
-            if (admobAdListener != null) {
-                admobAdListener.onAdFailedToLoad(i);
+            mIsLoadSuccess.set(false);
+            if (mAdmobAdListener != null) {
+                mAdmobAdListener.onAdFailedToLoad(i);
             }
-            Toast.makeText(context, "Pangle Ad Failed to load, error code is:" + i, Toast.LENGTH_SHORT).show();
-            AdmobFullVideoAdapter.this.admobAdListener.onAdFailedToLoad(i);
+            Toast.makeText(mContext, "Pangle Ad Failed to load, error code is:" + i, Toast.LENGTH_SHORT).show();
+            AdmobFullVideoAdapter.this.mAdmobAdListener.onAdFailedToLoad(i);
         }
 
         @Override
         public void onFullScreenVideoAdLoad(TTFullScreenVideoAd ttFullScreenVideoAd) {
-            isLoadSuccess.set(true);
-            if (admobAdListener != null) {
-                admobAdListener.onAdLoaded();
+            mIsLoadSuccess.set(true);
+            if (mAdmobAdListener != null) {
+                mAdmobAdListener.onAdLoaded();
             }
             AdmobFullVideoAdapter.this.mttFullVideoAd = ttFullScreenVideoAd;
             AdmobFullVideoAdapter.this.mttFullVideoAd.setFullScreenVideoAdInteractionListener(new TTFullScreenVideoAd.FullScreenVideoAdInteractionListener() {
                 @Override
                 public void onAdShow() {
-                    if (admobAdListener != null) {
-                        admobAdListener.onAdOpened();
+                    if (mAdmobAdListener != null) {
+                        mAdmobAdListener.onAdOpened();
                     }
                 }
 
                 @Override
                 public void onAdVideoBarClick() {
-                    if (admobAdListener != null) {
-                        admobAdListener.onAdClicked();
+                    if (mAdmobAdListener != null) {
+                        mAdmobAdListener.onAdClicked();
                     }
                 }
 
                 @Override
                 public void onAdClose() {
-                    if (admobAdListener != null) {
-                        admobAdListener.onAdClosed();
+                    if (mAdmobAdListener != null) {
+                        mAdmobAdListener.onAdClosed();
                     }
                 }
 
