@@ -43,7 +43,7 @@ import java.util.Map;
 public class AdmobNativeFeedAdAdapter implements CustomEventNative {
     private static final String ADAPTER_NAME = "AdmobFeedAdAdapter";
     private static final String SLOT_ID = "slotID";
-    private static final double SAMPLE_SDK_IMAGE_SCALE = 1.0;
+    private static final double PANGLE_SDK_IMAGE_SCALE = 1.0;
     public static final String KEY_PANGLE_LOGO = "pangle_logo";
     private String mSlotID = "";
     private CustomEventNativeListener mCustomEventNativeListener;
@@ -133,7 +133,7 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
             setAdvertiser(mPangleAd.getSource());
 
             if (mPangleAd.getIcon() != null && mPangleAd.getIcon().isValid()) {
-                setIcon(new PangleNativeMappedImage(null, Uri.parse(mPangleAd.getIcon().getImageUrl()), SAMPLE_SDK_IMAGE_SCALE));
+                setIcon(new PangleNativeMappedImage(null, Uri.parse(mPangleAd.getIcon().getImageUrl()), PANGLE_SDK_IMAGE_SCALE));
             }
 
             if (mPangleAd.getImageList() != null && mPangleAd.getImageList().size() != 0) {
@@ -141,7 +141,7 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
                 for (TTImage ttImage : mPangleAd.getImageList()) {
                     if (ttImage.isValid()) {
                         imagesList.add(new PangleNativeMappedImage(null, Uri.parse(ttImage.getImageUrl()),
-                                SAMPLE_SDK_IMAGE_SCALE));
+                                PANGLE_SDK_IMAGE_SCALE));
                     }
                 }
                 setImages(imagesList);

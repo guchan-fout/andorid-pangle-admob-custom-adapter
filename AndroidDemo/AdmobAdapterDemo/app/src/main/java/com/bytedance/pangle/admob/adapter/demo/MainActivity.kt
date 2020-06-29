@@ -9,8 +9,6 @@ import com.bytedance.sdk.openadsdk.TTAdConfig
 import com.bytedance.sdk.openadsdk.TTAdConstant
 import com.bytedance.sdk.openadsdk.TTAdSdk
 import com.github.ajalt.timberkt.BuildConfig
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import kotlinx.android.synthetic.main.activity_main.*
@@ -76,6 +74,8 @@ class MainActivity : AppCompatActivity() {
                         startActivity(intent)
                     }
                     2 -> {
+                        val intent = Intent(this@MainActivity, FullScreenVideoActivity::class.java)
+                        startActivity(intent)
                     }
                     else -> {
                     }
