@@ -42,10 +42,10 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class AdmobNativeFeedAdAdapter implements CustomEventNative {
     private static final String ADAPTER_NAME = "AdmobFeedAdAdapter";
-    private static final String SLOT_ID = "slotID";
+    private static final String PLACEMENT_ID = "placementID";
     private static final double PANGLE_SDK_IMAGE_SCALE = 1.0;
     public static final String KEY_PANGLE_LOGO = "pangle_logo";
-    private String mSlotID = "";
+    private String mPlacementID = "";
     private CustomEventNativeListener mCustomEventNativeListener;
     private Context mContext;
     private NativeAdOptions mNativeAdOptions;
@@ -56,11 +56,11 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
         this.mCustomEventNativeListener = customEventNativeListener;
 
         //obtain ad placement_id from admob server
-        mSlotID = getSlotId(serverParameter);
-        Log.d(ADAPTER_NAME, "SlotID=" + mSlotID);
+        mPlacementID = getPlacementId(serverParameter);
+        Log.d(ADAPTER_NAME, "PlacementID=" + mPlacementID);
 
-        if (mSlotID.isEmpty()) {
-            Log.e(ADAPTER_NAME, "mediation adslotID is null");
+        if (mPlacementID.isEmpty()) {
+            Log.e(ADAPTER_NAME, "mediation PlacementID is null");
             return;
         }
 
@@ -85,7 +85,7 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
         }
 
         AdSlot adSlot = new AdSlot.Builder()
-                .setCodeId(mSlotID)
+                .setCodeId(mPlacementID)
                 .setSupportDeepLink(true)
                 .setImageAcceptedSize(640, 320) //Set size to fit your ad slot size
                 .setAdCount(1) //ad count from 1 to 3
@@ -346,12 +346,12 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
 
     }
 
-    private String getSlotId(String serverParameters) {
+    private String getPlacementId(String serverParameters) {
         if (serverParameters != null) {
             try {
                 JSONObject jsonObject = new JSONObject(serverParameters);
-                if (jsonObject.has(SLOT_ID)) {
-                    return jsonObject.getString(SLOT_ID);
+                if (jsonObject.has(PLACEMENT_ID)) {
+                    return jsonObject.getString(PLACEMENT_ID);
                 }
             } catch (Throwable t) {
                 Log.e(ADAPTER_NAME, "Could not parse malformed JSON: " + serverParameters);

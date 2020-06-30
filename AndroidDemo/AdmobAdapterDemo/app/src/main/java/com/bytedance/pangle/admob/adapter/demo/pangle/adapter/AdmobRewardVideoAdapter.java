@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AdmobRewardVideoAdapter extends Adapter implements MediationRewardedAd {
 
     private static final String ADAPTER_NAME = "AdmobRewardVideoAdapter";
-    private static final String SLOT_ID = "slotID";
+    private static final String PLACEMENT_ID = "placementID";
     private MediationAdLoadCallback<MediationRewardedAd, MediationRewardedAdCallback> mAdmobAdLoadCallback;
     private MediationRewardedAdCallback mAdmobRewardedAdCallback;
     private TTRewardVideoAd mttRewardVideoAd;
@@ -159,7 +159,7 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
         }
 
         Bundle serverParameters = mediationRewardedAdConfiguration.getServerParameters();
-        String adslotID = getSlotId(serverParameters);
+        String adslotID = getPlacementId(serverParameters);
 
         Log.d(ADAPTER_NAME, "adslotID:" + adslotID);
 
@@ -218,15 +218,15 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
         }
     }
 
-    private String getSlotId(Bundle serverParameters) {
+    private String getPlacementId(Bundle serverParameters) {
         if (serverParameters != null) {
             try {
                 String jsonParams = serverParameters.getString("parameter");
                 if (jsonParams != null) {
                     try {
                         JSONObject jsonObject = new JSONObject(jsonParams);
-                        if (jsonObject.has(SLOT_ID)) {
-                            return jsonObject.getString(SLOT_ID);
+                        if (jsonObject.has(PLACEMENT_ID)) {
+                            return jsonObject.getString(PLACEMENT_ID);
                         }
                     } catch (Throwable t) {
                         Log.e(ADAPTER_NAME, "Could not parse malformed JSON: " + jsonParams);
