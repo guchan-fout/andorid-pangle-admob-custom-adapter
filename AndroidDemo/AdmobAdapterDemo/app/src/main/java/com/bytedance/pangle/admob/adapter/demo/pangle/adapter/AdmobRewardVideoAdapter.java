@@ -159,12 +159,12 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
         }
 
         Bundle serverParameters = mediationRewardedAdConfiguration.getServerParameters();
-        String adslotID = getPlacementId(serverParameters);
+        String placementID = getPlacementId(serverParameters);
 
-        Log.d(ADAPTER_NAME, "adslotID:" + adslotID);
+        Log.d(ADAPTER_NAME, "placementID:" + placementID);
 
-        if (adslotID.isEmpty()) {
-            Log.e(ADAPTER_NAME, "mediation adslotID is null");
+        if (placementID.isEmpty()) {
+            Log.e(ADAPTER_NAME, "mediation placementID is null");
             return;
         }
 
@@ -182,7 +182,7 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
         }
 
         AdSlot adSlot = new AdSlot.Builder()
-                .setCodeId(adslotID)
+                .setCodeId(placementID)
                 .setSupportDeepLink(true)
                 .setImageAcceptedSize(1080, 1920) //Set size to fit your ad slot size
                 .setRewardName("your reward's name") //Parameter for rewarded video ad requests, name of the reward
@@ -198,12 +198,17 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
 
     @Override
     public VersionInfo getVersionInfo() {
-        return null;
+        return getSDKVersionInfo();
     }
 
     @Override
     public VersionInfo getSDKVersionInfo() {
-        return null;
+        String versionString = TTAdSdk.getAdManager().getSDKVersion();
+        String splits[] = versionString.split("\\.");
+        int major = Integer.parseInt(splits[0]);
+        int minor = Integer.parseInt(splits[1]);
+        int micro = Integer.parseInt(splits[2]) * 100 + Integer.parseInt(splits[3]);
+        return new VersionInfo(major, minor, micro);
     }
 
     @Override
