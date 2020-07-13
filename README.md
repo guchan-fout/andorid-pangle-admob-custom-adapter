@@ -78,7 +78,7 @@
 
 - Add adapter's [packagename].[adaptername] to Class Name.
 
-- Add {"slotID": "your slot ID"} to Parameter.
+- Add {"placementID": "your placement ID"} to Parameter.
 
 **Please make sure to use JSON to set Parameter. Or you need to customize adapter yourself.**
 
