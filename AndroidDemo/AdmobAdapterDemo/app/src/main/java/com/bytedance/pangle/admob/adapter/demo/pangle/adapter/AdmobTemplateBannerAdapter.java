@@ -59,14 +59,11 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
         TTAdNative mTTAdNative = mTTAdManager.createAdNative(context.getApplicationContext());
         mTTAdManager.setGdpr(mediationAdRequest.taggedForChildDirectedTreatment());
 
-        Log.d("adSize.getWidth() is ", String.valueOf(adSize.getWidth()));
-        Log.d("adSize.getHeight() is ", String.valueOf(adSize.getHeight()));
-
         AdSlot adSlot = new AdSlot.Builder()
                 .setCodeId(mPlacementID)
                 .setSupportDeepLink(true)
                 .setAdCount(1)
-                .setExpressViewAcceptedSize(adSize.getWidth(), adSize.getHeight()) //期望模板广告view的size,单位dp
+                .setExpressViewAcceptedSize(adSize.getWidth(), adSize.getHeight())
                 .build();
         mTTAdNative.loadBannerExpressAd(adSlot, mTTBannerNativeExpressAdListener);
         Log.d(ADAPTER_NAME, "loadBannerExpressAd.....");
@@ -139,7 +136,7 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
 
         @Override
         public void onRenderSuccess(View view, float width, float height) {
-            Log.e(ADAPTER_NAME, " onRenderSuccess");
+            Log.d(ADAPTER_NAME, " onRenderSuccess");
             if (mCustomEventBannerListener != null) {
                 //render success add view to google view
                 mCustomEventBannerListener.onAdLoaded(view);
