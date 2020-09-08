@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        val list = arrayOf("Reward Video", "Native", "Interstitial")
+        val list = arrayOf("Reward Video", "Native", "Interstitial","Banner")
         val adapter = RecyclerAdapter(list)
         val layoutManager = LinearLayoutManager(this)
 
@@ -75,6 +75,10 @@ class MainActivity : AppCompatActivity() {
                     }
                     2 -> {
                         val intent = Intent(this@MainActivity, FullScreenVideoActivity::class.java)
+                        startActivity(intent)
+                    }
+                    3 -> {
+                        val intent = Intent(this@MainActivity, TemplateBannerAdActivity::class.java)
                         startActivity(intent)
                     }
                     else -> {

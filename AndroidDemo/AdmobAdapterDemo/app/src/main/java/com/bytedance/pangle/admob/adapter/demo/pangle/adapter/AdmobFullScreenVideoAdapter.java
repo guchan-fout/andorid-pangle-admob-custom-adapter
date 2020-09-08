@@ -24,8 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Adapter for Full Screen Video ad, please set this with package name on Admob
  */
 @SuppressWarnings("unused")
-public class AdmobInterstitialFullVideoAdapter implements CustomEventInterstitial {
-    private static final String ADAPTER_NAME = "AdmobFullVideoAdapter";
+public class AdmobFullScreenVideoAdapter implements CustomEventInterstitial {
+    private static final String ADAPTER_NAME = "AdmobFullScreenVideoAdapter";
     private static final String PLACEMENT_ID = "placementID";
     private String mPlacementID = "";
 
@@ -48,7 +48,7 @@ public class AdmobInterstitialFullVideoAdapter implements CustomEventInterstitia
         this.mAdmobAdListener = listener;
         //obtain ad placement_id from admob server
         mPlacementID = getPlacementID(serverParameter);
-        Log.e("PlacementId:", mPlacementID);
+        Log.d("PlacementId:", mPlacementID);
 
         if (mPlacementID.isEmpty()) {
             Log.e(ADAPTER_NAME, "mediation PlacementID is null");
@@ -87,7 +87,7 @@ public class AdmobInterstitialFullVideoAdapter implements CustomEventInterstitia
                 mAdmobAdListener.onAdFailedToLoad(i);
             }
             Toast.makeText(mContext, "Pangle Ad Failed to load, error code is:" + i, Toast.LENGTH_SHORT).show();
-            AdmobInterstitialFullVideoAdapter.this.mAdmobAdListener.onAdFailedToLoad(i);
+            AdmobFullScreenVideoAdapter.this.mAdmobAdListener.onAdFailedToLoad(i);
         }
 
         @Override
@@ -96,8 +96,8 @@ public class AdmobInterstitialFullVideoAdapter implements CustomEventInterstitia
             if (mAdmobAdListener != null) {
                 mAdmobAdListener.onAdLoaded();
             }
-            AdmobInterstitialFullVideoAdapter.this.mttFullVideoAd = ttFullScreenVideoAd;
-            AdmobInterstitialFullVideoAdapter.this.mttFullVideoAd.setFullScreenVideoAdInteractionListener(new TTFullScreenVideoAd.FullScreenVideoAdInteractionListener() {
+            AdmobFullScreenVideoAdapter.this.mttFullVideoAd = ttFullScreenVideoAd;
+            AdmobFullScreenVideoAdapter.this.mttFullVideoAd.setFullScreenVideoAdInteractionListener(new TTFullScreenVideoAd.FullScreenVideoAdInteractionListener() {
                 @Override
                 public void onAdShow() {
                     if (mAdmobAdListener != null) {
