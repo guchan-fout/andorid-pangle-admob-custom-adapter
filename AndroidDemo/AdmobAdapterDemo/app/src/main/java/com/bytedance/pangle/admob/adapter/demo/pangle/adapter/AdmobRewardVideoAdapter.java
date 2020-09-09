@@ -174,13 +174,6 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
         TTAdManager mTTAdManager = TTAdSdk.getAdManager();
         TTAdNative mTTAdNative = mTTAdManager.createAdNative(context.getApplicationContext());
 
-        Bundle extras = mediationRewardedAdConfiguration.getMediationExtras();
-        if (extras != null && extras.containsKey("gdpr")) {
-            int gdpr = extras.getInt("gdpr", 1);
-            mTTAdManager.setGdpr(gdpr);
-            Log.e(ADAPTER_NAME, "AdmobFeedAdAdapter->feed native ad receive gdpr=" + gdpr);
-        }
-
         AdSlot adSlot = new AdSlot.Builder()
                 .setCodeId(placementID)
                 .setSupportDeepLink(true)

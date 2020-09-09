@@ -57,7 +57,6 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
         //init Pangle ad manager
         TTAdManager mTTAdManager = TTAdSdk.getAdManager();
         TTAdNative mTTAdNative = mTTAdManager.createAdNative(context.getApplicationContext());
-        mTTAdManager.setGdpr(mediationAdRequest.taggedForChildDirectedTreatment());
 
         AdSlot adSlot = new AdSlot.Builder()
                 .setCodeId(mPlacementID)

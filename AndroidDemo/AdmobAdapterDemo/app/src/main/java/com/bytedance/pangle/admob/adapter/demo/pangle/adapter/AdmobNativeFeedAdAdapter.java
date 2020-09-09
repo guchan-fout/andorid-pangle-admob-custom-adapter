@@ -78,12 +78,6 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
         TTAdManager mTTAdManager = TTAdSdk.getAdManager();
         TTAdNative mTTAdNative = mTTAdManager.createAdNative(context.getApplicationContext());
 
-        if (customEventExtras != null && customEventExtras.containsKey("gdpr")) {
-            int gdpr = customEventExtras.getInt("gdpr", 1);
-            mTTAdManager.setGdpr(gdpr);
-            Log.e(ADAPTER_NAME, "AdmobFeedAdAdapter->feed native ad receive gdpr=" + gdpr);
-        }
-
         AdSlot adSlot = new AdSlot.Builder()
                 .setCodeId(mPlacementID)
                 .setSupportDeepLink(true)
