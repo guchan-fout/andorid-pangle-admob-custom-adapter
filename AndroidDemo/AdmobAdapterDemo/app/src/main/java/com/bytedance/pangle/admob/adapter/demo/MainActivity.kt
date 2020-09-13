@@ -5,19 +5,16 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bytedance.pangle.admob.adapter.demo.adapter.RecyclerAdapter
 import com.bytedance.sdk.openadsdk.TTAdConfig
 import com.bytedance.sdk.openadsdk.TTAdConstant
 import com.bytedance.sdk.openadsdk.TTAdSdk
-import com.github.ajalt.timberkt.BuildConfig
-import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var mAdView: AdView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,8 +50,9 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        val list = arrayOf("Reward Video", "Native", "Interstitial","Banner")
-        val adapter = RecyclerAdapter(list)
+        val list = arrayOf("Reward Video", "Native", "Interstitial","Template Native Feed","Template Banner")
+        val adapter =
+            RecyclerAdapter(list)
         val layoutManager = LinearLayoutManager(this)
 
         recycler_view.layoutManager = layoutManager
@@ -78,6 +76,10 @@ class MainActivity : AppCompatActivity() {
                         startActivity(intent)
                     }
                     3 -> {
+                        val intent = Intent(this@MainActivity, TemplateNativeFeedAdActivity::class.java)
+                        startActivity(intent)
+                    }
+                    4 -> {
                         val intent = Intent(this@MainActivity, TemplateBannerAdActivity::class.java)
                         startActivity(intent)
                     }

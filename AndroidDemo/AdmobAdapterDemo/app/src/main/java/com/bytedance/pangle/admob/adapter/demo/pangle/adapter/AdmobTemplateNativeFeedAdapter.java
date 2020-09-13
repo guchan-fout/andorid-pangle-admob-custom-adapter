@@ -23,15 +23,14 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-
 /**
- * Adapter for template banner, please set this with package name on Admob
+ * Adapter for template natvie feed, please set this with package name on Admob
  */
 @SuppressWarnings("unused")
 @SuppressLint("LongLogTag")
-public class AdmobTemplateBannerAdapter implements CustomEventBanner {
+public class AdmobTemplateNativeFeedAdapter implements CustomEventBanner {
 
-    private static final String ADAPTER_NAME = "AdmobTemplateBannerAdapter";
+    private static final String ADAPTER_NAME = "AdmobTemplateNativeFeedAdapter";
 
     private static final String PLACEMENT_ID = "placementID";
 
@@ -41,15 +40,13 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
 
     private CustomEventBannerListener mCustomEventBannerListener;
 
-    // ad refresh interval time. ms
-    private int mIntervalTime = 30 *1000;
-
     private Context mContext = null;
 
     @Override
     public void requestBannerAd(Context context, CustomEventBannerListener customEventBannerListener, String serverParameter, AdSize adSize, MediationAdRequest mediationAdRequest, Bundle bundle) {
         this.mContext = context;
         this.mCustomEventBannerListener = customEventBannerListener;
+
         this.mPlacementID = getPlacementId(serverParameter);
         Log.d("PlacementId:", mPlacementID);
         if (mPlacementID.isEmpty()) {
@@ -67,8 +64,8 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
                 .setAdCount(1)
                 .setExpressViewAcceptedSize(adSize.getWidth(), adSize.getHeight())
                 .build();
-        mTTAdNative.loadBannerExpressAd(adSlot, mTTBannerNativeExpressAdListener);
-        Log.d(ADAPTER_NAME, "loadBannerExpressAd.....");
+        mTTAdNative.loadNativeExpressAd(adSlot, mTTNativeExpressAdListener);
+        Log.d(ADAPTER_NAME, "loadNativeExpressAd.....");
     }
 
     @Override
@@ -87,7 +84,7 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
     }
 
 
-    private TTAdNative.NativeExpressAdListener mTTBannerNativeExpressAdListener = new TTAdNative.NativeExpressAdListener() {
+    private TTAdNative.NativeExpressAdListener mTTNativeExpressAdListener = new TTAdNative.NativeExpressAdListener() {
 
         @Override
         public void onError(int code, String message) {
@@ -105,8 +102,8 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
                 return;
             }
             mTTNativeExpressAd = ads.get(0);
-            mTTNativeExpressAd.setSlideIntervalTime(mIntervalTime);
             mTTNativeExpressAd.setExpressInteractionListener(mExpressAdInteractionListener);
+            bindDislike(mTTNativeExpressAd, false);
             mTTNativeExpressAd.render();
         }
     };
@@ -159,5 +156,46 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
             }
         }
         return"";
+    }
+
+    private void bindDislike(TTNativeExpressAd ad, boolean customStyle) {
+        if (customStyle) {
+            //使用自定义样式
+            List<FilterWord> words = ad.getFilterWords();
+            if (words == null || words.isEmpty()) {
+                return;
+            }
+
+            final PangleCustomDislikeDialog customDislikeDialog = new PangleCustomDislikeDialog(mContext, words);
+            customDislikeDialog.setOnDislikeItemClick(new PangleCustomDislikeDialog.OnDislikeItemClick() {
+                @Override
+                public void onItemClick(FilterWord filterWord) {
+                    //屏蔽广告
+                    //Toast.show(mContext, "点击 " + filterWord.getName());
+                    //用户选择不喜欢原因后，移除广告展示
+                    //mExpressContainer.removeAllViews();
+                    Log.d(ADAPTER_NAME, " onItemClick::" + filterWord.getName());
+                }
+            });
+            ad.setDislikeDialog(customDislikeDialog);
+            return;
+        }
+        //使用默认个性化模板中默认dislike弹出样式
+        ad.setDislikeCallback((Activity) mContext, new TTAdDislike.DislikeInteractionCallback() {
+            @Override
+            public void onSelected(int position, String value) {
+                //TToast.show(mContext, "点击 " + value);
+                //用户选择不喜欢原因后，移除广告展示
+                //mExpressContainer.removeAllViews();
+                Log.d(ADAPTER_NAME, " onSelected::" + position);
+                mCustomEventBannerListener.onAdClosed();
+            }
+
+            @Override
+            public void onCancel() {
+                //TToast.show(mContext, "点击取消 ");
+                Log.d(ADAPTER_NAME, " 点击取消::");
+            }
+        });
     }
 }

@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
-import kotlinx.android.synthetic.main.activity_main.*
 
 class TemplateBannerAdActivity : AppCompatActivity()  {
 

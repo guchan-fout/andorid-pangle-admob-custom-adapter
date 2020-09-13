@@ -1,9 +1,10 @@
-package com.bytedance.pangle.admob.adapter.demo
+package com.bytedance.pangle.admob.adapter.demo.adapter
 
 import android.view.LayoutInflater.from
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bytedance.pangle.admob.adapter.demo.R
 import kotlinx.android.synthetic.main.recyclerview_item.view.*
 
 class RecyclerAdapter (private val customList: Array<String>) : RecyclerView.Adapter<RecyclerAdapter.RecyclerAdapterViewHolder>(){
@@ -14,8 +15,11 @@ class RecyclerAdapter (private val customList: Array<String>) : RecyclerView.Ada
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerAdapterViewHolder {
+
         val item = from(parent.context).inflate(R.layout.recyclerview_item, parent, false)
-        return RecyclerAdapterViewHolder(item)
+        return RecyclerAdapterViewHolder(
+            item
+        )
     }
 
     override fun getItemCount(): Int {
