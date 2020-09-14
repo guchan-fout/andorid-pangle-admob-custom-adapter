@@ -103,7 +103,7 @@ public class AdmobTemplateNativeFeedAdapter implements CustomEventBanner {
             }
             mTTNativeExpressAd = ads.get(0);
             mTTNativeExpressAd.setExpressInteractionListener(mExpressAdInteractionListener);
-            bindDislike(mTTNativeExpressAd, false);
+            bindDislike(mTTNativeExpressAd);
             mTTNativeExpressAd.render();
         }
     };
@@ -155,46 +155,20 @@ public class AdmobTemplateNativeFeedAdapter implements CustomEventBanner {
                 Log.e(ADAPTER_NAME, "Could not parse malformed JSON: " + serverParameters);
             }
         }
-        return"";
+        return "";
     }
 
-    private void bindDislike(TTNativeExpressAd ad, boolean customStyle) {
-        if (customStyle) {
-            //使用自定义样式
-            List<FilterWord> words = ad.getFilterWords();
-            if (words == null || words.isEmpty()) {
-                return;
-            }
-
-            final PangleCustomDislikeDialog customDislikeDialog = new PangleCustomDislikeDialog(mContext, words);
-            customDislikeDialog.setOnDislikeItemClick(new PangleCustomDislikeDialog.OnDislikeItemClick() {
-                @Override
-                public void onItemClick(FilterWord filterWord) {
-                    //屏蔽广告
-                    //Toast.show(mContext, "点击 " + filterWord.getName());
-                    //用户选择不喜欢原因后，移除广告展示
-                    //mExpressContainer.removeAllViews();
-                    Log.d(ADAPTER_NAME, " onItemClick::" + filterWord.getName());
-                }
-            });
-            ad.setDislikeDialog(customDislikeDialog);
-            return;
-        }
-        //使用默认个性化模板中默认dislike弹出样式
+    private void bindDislike(TTNativeExpressAd ad) {
         ad.setDislikeCallback((Activity) mContext, new TTAdDislike.DislikeInteractionCallback() {
             @Override
             public void onSelected(int position, String value) {
-                //TToast.show(mContext, "点击 " + value);
-                //用户选择不喜欢原因后，移除广告展示
-                //mExpressContainer.removeAllViews();
                 Log.d(ADAPTER_NAME, " onSelected::" + position);
                 mCustomEventBannerListener.onAdClosed();
             }
 
             @Override
             public void onCancel() {
-                //TToast.show(mContext, "点击取消 ");
-                Log.d(ADAPTER_NAME, " 点击取消::");
+
             }
         });
     }

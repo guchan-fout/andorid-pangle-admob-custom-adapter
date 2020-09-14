@@ -107,6 +107,7 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
             mTTNativeExpressAd = ads.get(0);
             mTTNativeExpressAd.setSlideIntervalTime(mIntervalTime);
             mTTNativeExpressAd.setExpressInteractionListener(mExpressAdInteractionListener);
+            bindDislike(mTTNativeExpressAd);
             mTTNativeExpressAd.render();
         }
     };
@@ -159,5 +160,20 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
             }
         }
         return"";
+    }
+
+    private void bindDislike(TTNativeExpressAd ad) {
+        ad.setDislikeCallback((Activity) mContext, new TTAdDislike.DislikeInteractionCallback() {
+            @Override
+            public void onSelected(int position, String value) {
+                Log.d(ADAPTER_NAME, " onSelected::" + position);
+                mCustomEventBannerListener.onAdClosed();
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
     }
 }
