@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @SuppressWarnings("unused")
 public class AdmobFullScreenVideoAdapter implements CustomEventInterstitial {
-    private static final String ADAPTER_NAME = "AdmobFullScreenVideoAdapter";
+    private static final String ADAPTER_NAME = "AdmobFullScrnVA";
     private static final String PLACEMENT_ID = "placementID";
     private String mPlacementID = "";
 

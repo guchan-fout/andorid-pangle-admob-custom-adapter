@@ -120,7 +120,7 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
         @Override
         public void onRewardVideoAdLoad(TTRewardVideoAd ttRewardVideoAd) {
             isLoadSuccess.set(true);
-            Log.e(ADAPTER_NAME, "onRewardVideoAdLoad.........onRewardVideoAdLoad");
+            Log.d(ADAPTER_NAME, "onRewardVideoAdLoad.........onRewardVideoAdLoad");
             mttRewardVideoAd = ttRewardVideoAd;
             mttRewardVideoAd.setRewardAdInteractionListener(TikTokRewardedInteractiveListener);
             if (mAdmobAdLoadCallback != null) {
