@@ -86,7 +86,7 @@ public class AdmobFullScreenVideoAdapter implements CustomEventInterstitial {
             if (mAdmobAdListener != null) {
                 mAdmobAdListener.onAdFailedToLoad(i);
             }
-            Toast.makeText(mContext, "Pangle Ad Failed to load, error code is:" + i, Toast.LENGTH_SHORT).show();
+            Log.e(ADAPTER_NAME, "Pangle Ad Failed to load, error code is:" + i + ", msg:" + s);
             AdmobFullScreenVideoAdapter.this.mAdmobAdListener.onAdFailedToLoad(i);
         }
 
