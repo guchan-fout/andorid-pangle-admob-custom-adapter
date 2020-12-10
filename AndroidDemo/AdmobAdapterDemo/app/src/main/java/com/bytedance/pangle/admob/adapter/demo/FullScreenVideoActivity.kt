@@ -23,7 +23,7 @@ class FullScreenVideoActivity : AppCompatActivity() {
     }
 
     private fun setListener() {
-        mInterstitialAd.adListener = object: AdListener() {
+        mInterstitialAd.adListener = object : AdListener() {
             override fun onAdLoaded() {
                 Timber.d("onAdLoaded")
                 mInterstitialAd.show()

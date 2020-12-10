@@ -50,7 +50,13 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        val list = arrayOf("Reward Video", "Native", "Interstitial","Template Native Feed","Template Banner")
+        val list = arrayOf(
+            "Reward Video",
+            "Native",
+            "Interstitial",
+            "Template Native Feed",
+            "Template Banner"
+        )
         val adapter =
             RecyclerAdapter(list)
         val layoutManager = LinearLayoutManager(this)
@@ -76,7 +82,8 @@ class MainActivity : AppCompatActivity() {
                         startActivity(intent)
                     }
                     3 -> {
-                        val intent = Intent(this@MainActivity, TemplateNativeFeedAdActivity::class.java)
+                        val intent =
+                            Intent(this@MainActivity, TemplateNativeFeedAdActivity::class.java)
                         startActivity(intent)
                     }
                     4 -> {

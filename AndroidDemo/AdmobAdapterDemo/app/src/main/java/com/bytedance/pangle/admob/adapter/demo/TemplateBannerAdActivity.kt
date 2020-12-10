@@ -5,67 +5,59 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
+import kotlinx.android.synthetic.main.activity_template_banner.*
 
-class TemplateBannerAdActivity : AppCompatActivity()  {
+class TemplateBannerAdActivity : AppCompatActivity() {
 
-    lateinit var mAdView : AdView
+    private lateinit var mAdViewRectangle: AdView
+    private lateinit var mAdViewBanner: AdView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_template_banner)
 
+        mAdViewRectangle = findViewById(R.id.adView300_250)
+        mAdViewBanner = findViewById(R.id.adView320_50)
 
-        // Create an ad request.
         val adRequest = AdRequest.Builder().build()
-        mAdView = findViewById(R.id.adView)
 
-        // Start loading the ad in the background.
-        mAdView.loadAd(adRequest)
-
-        mAdView.adListener = object: AdListener() {
-            override fun onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-            }
-
-            override fun onAdFailedToLoad(adError : Int) {
-                // Code to be executed when an ad request fails.
-            }
-
-            override fun onAdOpened() {
-                // Code to be executed when an ad opens an overlay that
-                // covers the screen.
-            }
-
-            override fun onAdClicked() {
-                // Code to be executed when the user clicks on an ad.
-            }
-
-            override fun onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
-
-            override fun onAdClosed() {
-                // Code to be executed when the user is about to return
-                // to the app after tapping on an ad.
+        load300btn.setOnClickListener {
+            // Start loading the ad in the background.
+            mAdViewRectangle.loadAd(adRequest)
+            mAdViewRectangle.adListener = object : AdListener() {
+                //implement listener for admob here
             }
         }
+
+        load320btn.setOnClickListener {
+            // Start loading the ad in the background.
+            mAdViewBanner.loadAd(adRequest)
+            mAdViewBanner.adListener = object : AdListener() {
+                //implement listener for admob here
+            }
+        }
+
+
     }
 
     // Called when leaving the activity
     public override fun onPause() {
-        mAdView.pause()
+        mAdViewRectangle.pause()
+        mAdViewBanner.pause()
         super.onPause()
     }
 
     // Called when returning to the activity
     public override fun onResume() {
         super.onResume()
-        mAdView.resume()
+        mAdViewRectangle.resume()
+        mAdViewBanner.resume()
     }
 
     // Called before the activity is destroyed
     public override fun onDestroy() {
-        mAdView.destroy()
+        mAdViewRectangle.destroy()
+        mAdViewBanner.destroy()
         super.onDestroy()
     }
 }

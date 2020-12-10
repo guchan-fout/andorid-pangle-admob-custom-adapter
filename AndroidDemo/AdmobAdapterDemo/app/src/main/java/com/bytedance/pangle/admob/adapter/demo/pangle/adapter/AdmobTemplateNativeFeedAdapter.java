@@ -169,6 +169,11 @@ public class AdmobTemplateNativeFeedAdapter implements CustomEventBanner {
             public void onCancel() {
 
             }
+
+            @Override
+            public void onRefuse() {
+
+            }
         });
     }
 }

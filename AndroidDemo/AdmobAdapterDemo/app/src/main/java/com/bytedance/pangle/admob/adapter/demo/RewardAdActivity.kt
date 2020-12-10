@@ -37,7 +37,11 @@ class RewardAdActivity : AppCompatActivity() {
                 }
 
                 override fun onRewardedAdFailedToLoad(errorCode: Int) {
-                    Toast.makeText(this@RewardAdActivity, "onRewardedAdFailedToLoad", Toast.LENGTH_LONG)
+                    Toast.makeText(
+                        this@RewardAdActivity,
+                        "onRewardedAdFailedToLoad",
+                        Toast.LENGTH_LONG
+                    )
                         .show()
                     Timber.d("onRewardedAdFailedToLoad->${errorCode}")
                 }
@@ -53,19 +57,35 @@ class RewardAdActivity : AppCompatActivity() {
                     override fun onUserEarnedReward(
                         rewardItem: RewardItem
                     ) {
-                        Toast.makeText(this@RewardAdActivity, "onUserEarnedReward", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this@RewardAdActivity,
+                            "onUserEarnedReward",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
 
                     override fun onRewardedAdClosed() {
-                        Toast.makeText(this@RewardAdActivity, "onRewardedAdClosed", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this@RewardAdActivity,
+                            "onRewardedAdClosed",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
 
                     override fun onRewardedAdFailedToShow(errorCode: Int) {
-                        Toast.makeText(this@RewardAdActivity, "onRewardedAdFailedToShow", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this@RewardAdActivity,
+                            "onRewardedAdFailedToShow",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
 
                     override fun onRewardedAdOpened() {
-                        Toast.makeText(this@RewardAdActivity, "onRewardedAdOpened", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this@RewardAdActivity,
+                            "onRewardedAdOpened",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             )

@@ -49,7 +49,7 @@ class TemplateNativeFeedAdActivity : AppCompatActivity() {
                 val content = CellContent()
                 content.isAd = true
                 content.adView = mAdView
-                mContentlist.add(adPosition,content)
+                mContentlist.add(adPosition, content)
                 Timber.d("size :" + mContentlist.size)
                 adapter.notifyItemInserted(adPosition)
             }

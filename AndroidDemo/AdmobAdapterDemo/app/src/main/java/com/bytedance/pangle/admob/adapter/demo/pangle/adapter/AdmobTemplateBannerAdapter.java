@@ -41,7 +41,7 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
     private CustomEventBannerListener mCustomEventBannerListener;
 
     // ad refresh interval time. ms
-    private int mIntervalTime = 30 *1000;
+    private int mIntervalTime = 30 * 1000;
 
     private Context mContext = null;
 
@@ -158,7 +158,7 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
                 Log.e(ADAPTER_NAME, "Could not parse malformed JSON: " + serverParameters);
             }
         }
-        return"";
+        return "";
     }
 
     private void bindDislike(TTNativeExpressAd ad) {
@@ -171,6 +171,11 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
 
             @Override
             public void onCancel() {
+
+            }
+
+            @Override
+            public void onRefuse() {
 
             }
         });

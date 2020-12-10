@@ -208,7 +208,7 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
     public void showAd(Context context) {
         if (!(context instanceof Activity)) {
             // Context not an Activity context, fail the initialization.
-            Log.e(ADAPTER_NAME,"Pangle SDK requires an Activity context to initialize");
+            Log.e(ADAPTER_NAME, "Pangle SDK requires an Activity context to initialize");
             return;
         }
         if (mttRewardVideoAd != null && isLoadSuccess.get()) {

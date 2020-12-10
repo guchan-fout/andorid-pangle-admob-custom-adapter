@@ -85,7 +85,7 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
                 .setAdCount(1) //ad count from 1 to 3
                 .build();
 
-        mTTAdNative.loadFeedAd(adSlot,feedAdListener);
+        mTTAdNative.loadFeedAd(adSlot, feedAdListener);
     }
 
 
@@ -351,7 +351,7 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
                 Log.e(ADAPTER_NAME, "Could not parse malformed JSON: " + serverParameters);
             }
         }
-        return"";
+        return "";
     }
 
     public static int getAdmobError(int errorCode) {
