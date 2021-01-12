@@ -1,5 +1,6 @@
 package com.bytedance.pangle.admob.adapter.demo.pangle.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -11,6 +12,13 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.bytedance.sdk.openadsdk.AdSlot;
 import com.bytedance.sdk.openadsdk.TTAdConstant;
 import com.bytedance.sdk.openadsdk.TTAdManager;
@@ -118,6 +126,7 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
     class PangleNativeAd extends UnifiedNativeAdMapper {
         private TTFeedAd mPangleAd;
 
+        @SuppressLint("CheckResult")
         private PangleNativeAd(TTFeedAd ad) {
             this.mPangleAd = ad;
             setHeadline(mPangleAd.getTitle());
@@ -126,8 +135,26 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
             setStarRating(Double.valueOf(mPangleAd.getAppScore()));
             setAdvertiser(mPangleAd.getSource());
 
+
             if (mPangleAd.getIcon() != null && mPangleAd.getIcon().isValid()) {
-                setIcon(new PangleNativeMappedImage(null, Uri.parse(mPangleAd.getIcon().getImageUrl()), PANGLE_SDK_IMAGE_SCALE));
+                Glide.with(mContext)
+                        .asDrawable()
+                        .load(mPangleAd.getIcon().getImageUrl())
+                        .listener(new RequestListener<Drawable>() {
+
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                Log.d(ADAPTER_NAME, "onLoadFailed:" + e.getMessage());
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                Log.d(ADAPTER_NAME, "onResourceReady");
+                                setIcon(new PangleNativeMappedImage(resource, Uri.parse(mPangleAd.getIcon().getImageUrl()), PANGLE_SDK_IMAGE_SCALE));
+                                return false;
+                            }
+                        }).submit();
             }
 
             if (mPangleAd.getImageList() != null && mPangleAd.getImageList().size() != 0) {
