@@ -12,20 +12,12 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import androidx.annotation.Nullable;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.bytedance.sdk.openadsdk.AdSlot;
 import com.bytedance.sdk.openadsdk.TTAdConstant;
 import com.bytedance.sdk.openadsdk.TTAdManager;
 import com.bytedance.sdk.openadsdk.TTAdNative;
 import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.bytedance.sdk.openadsdk.TTFeedAd;
-import com.bytedance.sdk.openadsdk.TTImage;
 import com.bytedance.sdk.openadsdk.TTNativeAd;
 import com.bytedance.sdk.openadsdk.adapter.MediaView;
 import com.bytedance.sdk.openadsdk.adapter.MediationAdapterUtil;
@@ -137,35 +129,7 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
 
 
             if (mPangleAd.getIcon() != null && mPangleAd.getIcon().isValid()) {
-                Glide.with(mContext)
-                        .asDrawable()
-                        .load(mPangleAd.getIcon().getImageUrl())
-                        .listener(new RequestListener<Drawable>() {
-
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                Log.d(ADAPTER_NAME, "onLoadFailed:" + e.getMessage());
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                Log.d(ADAPTER_NAME, "onResourceReady");
-                                setIcon(new PangleNativeMappedImage(resource, Uri.parse(mPangleAd.getIcon().getImageUrl()), PANGLE_SDK_IMAGE_SCALE));
-                                return false;
-                            }
-                        }).submit();
-            }
-
-            if (mPangleAd.getImageList() != null && mPangleAd.getImageList().size() != 0) {
-                List<NativeAd.Image> imagesList = new ArrayList<>();
-                for (TTImage ttImage : mPangleAd.getImageList()) {
-                    if (ttImage.isValid()) {
-                        imagesList.add(new PangleNativeMappedImage(null, Uri.parse(ttImage.getImageUrl()),
-                                PANGLE_SDK_IMAGE_SCALE));
-                    }
-                }
-                setImages(imagesList);
+                setIcon(new PangleNativeMappedImage(null, Uri.parse(mPangleAd.getIcon().getImageUrl()), PANGLE_SDK_IMAGE_SCALE));
             }
 
             Bundle extras = new Bundle();
@@ -178,12 +142,14 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
 
 
             /** add Native Feed Main View */
-            MediaView mediaView = new MediaView(mContext);
-            MediationAdapterUtil.addNativeFeedMainView(mContext, ad.getImageMode(), mediaView, ad.getAdView(), ad.getImageList());
-            setMediaView(mediaView);
+            final MediaView mediaView = new MediaView(mContext);
 
+            Log.d(ADAPTER_NAME, "adType is :" + ad.getImageMode());
 
-            if (mPangleAd.getImageMode() == TTAdConstant.IMAGE_MODE_VIDEO) {
+            if (ad.getAdView() != null) {
+                Log.d(ADAPTER_NAME, "Is a video ad");
+                //mediaView.addView(ad.getAdView());
+                setMediaView(ad.getAdView());
                 setHasVideoContent(true);
                 mPangleAd.setVideoAdListener(new TTFeedAd.VideoAdListener() {
                     @Override
@@ -221,6 +187,9 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
                         // Google Mobile Ads SDK doesn't have a matching event. Do nothing.
                     }
                 });
+            } else {
+                MediationAdapterUtil.addNativeFeedMainView(mContext, TTAdConstant.IMAGE_MODE_LARGE_IMG, mediaView, null, ad.getImageList());
+                setMediaView(mediaView);
             }
         }
 
