@@ -67,7 +67,7 @@
 
 - Set info
 
- - **Class Name**: [packagename].[adaptername], for example,`com.bytedance.pangle.admob.adapter.demo.pangle.adapter.AdmobRewardVideoAdapter`mediation-param
+ - **Class Name**: [packagename].[adaptername], for example,`com.bytedance.pangle.admob.adapter.demo.pangle.adapter.AdmobRewardVideoAdapter`
 
  - **Parameter**: Add {"placementID": "[your placement ID on Pangle](#placementID)"} to Parameter.
 
