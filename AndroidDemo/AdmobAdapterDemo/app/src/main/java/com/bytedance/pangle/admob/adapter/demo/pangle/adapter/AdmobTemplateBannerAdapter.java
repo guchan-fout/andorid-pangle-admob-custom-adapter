@@ -41,7 +41,7 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
     private CustomEventBannerListener mCustomEventBannerListener;
 
     // ad refresh interval time. ms
-    private int mIntervalTime = 30 * 1000;
+    //private int mIntervalTime = 30 * 1000;
 
     private Context mContext = null;
 
@@ -104,7 +104,8 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
                 return;
             }
             mTTNativeExpressAd = ads.get(0);
-            mTTNativeExpressAd.setSlideIntervalTime(mIntervalTime);
+            // add ad refresh if need
+            //mTTNativeExpressAd.setSlideIntervalTime(mIntervalTime);
             mTTNativeExpressAd.setExpressInteractionListener(mExpressAdInteractionListener);
             bindDislike(mTTNativeExpressAd);
             mTTNativeExpressAd.render();
