@@ -1,6 +1,5 @@
 package com.bytedance.pangle.admob.adapter.demo.pangle.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -18,6 +17,7 @@ import com.bytedance.sdk.openadsdk.TTAdManager;
 import com.bytedance.sdk.openadsdk.TTAdNative;
 import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.bytedance.sdk.openadsdk.TTFeedAd;
+import com.bytedance.sdk.openadsdk.TTImage;
 import com.bytedance.sdk.openadsdk.TTNativeAd;
 import com.bytedance.sdk.openadsdk.adapter.MediaView;
 import com.bytedance.sdk.openadsdk.adapter.MediationAdapterUtil;
@@ -30,6 +30,7 @@ import com.google.android.gms.ads.mediation.UnifiedNativeAdMapper;
 import com.google.android.gms.ads.mediation.customevent.CustomEventNative;
 import com.google.android.gms.ads.mediation.customevent.CustomEventNativeListener;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -76,6 +77,10 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
 
         //init Pangle ad manager
         TTAdManager mTTAdManager = TTAdSdk.getAdManager();
+
+        //noinspection deprecation
+        mTTAdManager.setData(getUserData());
+
         TTAdNative mTTAdNative = mTTAdManager.createAdNative(context.getApplicationContext());
 
         AdSlot adSlot = new AdSlot.Builder()
@@ -118,7 +123,6 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
     class PangleNativeAd extends UnifiedNativeAdMapper {
         private TTFeedAd mPangleAd;
 
-        @SuppressLint("CheckResult")
         private PangleNativeAd(TTFeedAd ad) {
             this.mPangleAd = ad;
             setHeadline(mPangleAd.getTitle());
@@ -127,13 +131,22 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
             setStarRating(Double.valueOf(mPangleAd.getAppScore()));
             setAdvertiser(mPangleAd.getSource());
 
-
             if (mPangleAd.getIcon() != null && mPangleAd.getIcon().isValid()) {
                 setIcon(new PangleNativeMappedImage(null, Uri.parse(mPangleAd.getIcon().getImageUrl()), PANGLE_SDK_IMAGE_SCALE));
             }
 
+            if (mPangleAd.getImageList() != null && mPangleAd.getImageList().size() != 0) {
+                List<NativeAd.Image> imagesList = new ArrayList<>();
+                for (TTImage ttImage : mPangleAd.getImageList()) {
+                    if (ttImage.isValid()) {
+                        imagesList.add(new PangleNativeMappedImage(null, Uri.parse(ttImage.getImageUrl()),
+                                PANGLE_SDK_IMAGE_SCALE));
+                    }
+                }
+                setImages(imagesList);
+            }
+
             Bundle extras = new Bundle();
-            extras.putParcelable(KEY_PANGLE_LOGO, mPangleAd.getAdLogo());
             this.setExtras(extras);
 
             /**Pangle does its own show event handling and click event handling*/
@@ -142,14 +155,12 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
 
 
             /** add Native Feed Main View */
-            final MediaView mediaView = new MediaView(mContext);
+            MediaView mediaView = new MediaView(mContext);
+            MediationAdapterUtil.addNativeFeedMainView(mContext, ad.getImageMode(), mediaView, ad.getAdView(), ad.getImageList());
+            setMediaView(mediaView);
 
-            Log.d(ADAPTER_NAME, "adType is :" + ad.getImageMode());
 
-            if (ad.getAdView() != null) {
-                Log.d(ADAPTER_NAME, "Is a video ad");
-                //mediaView.addView(ad.getAdView());
-                setMediaView(ad.getAdView());
+            if (mPangleAd.getImageMode() == TTAdConstant.IMAGE_MODE_VIDEO) {
                 setHasVideoContent(true);
                 mPangleAd.setVideoAdListener(new TTFeedAd.VideoAdListener() {
                     @Override
@@ -187,9 +198,6 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
                         // Google Mobile Ads SDK doesn't have a matching event. Do nothing.
                     }
                 });
-            } else {
-                MediationAdapterUtil.addNativeFeedMainView(mContext, TTAdConstant.IMAGE_MODE_LARGE_IMG, mediaView, null, ad.getImageList());
-                setMediaView(mediaView);
             }
         }
 
@@ -368,6 +376,26 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
         }
 
         return errorCode;
+    }
+
+    private static String getUserData() {
+        String result = "";
+        try {
+            JSONArray adData = new JSONArray();
+            JSONObject mediationObject = new JSONObject();
+            mediationObject.putOpt("name", "mediation");
+            mediationObject.putOpt("value", "admob");
+            adData.put(mediationObject);
+
+            JSONObject adapterVersionObject = new JSONObject();
+            adapterVersionObject.putOpt("name", "adapter_version");
+            adapterVersionObject.putOpt("value", "1.2.1");
+            adData.put(adapterVersionObject);
+            result = adData.toString();
+        } catch (Exception e) {
+
+        }
+        return result;
     }
 }
 

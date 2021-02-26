@@ -18,6 +18,7 @@ import com.google.android.gms.ads.mediation.MediationAdRequest;
 import com.google.android.gms.ads.mediation.customevent.CustomEventBanner;
 import com.google.android.gms.ads.mediation.customevent.CustomEventBannerListener;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -58,6 +59,10 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
 
         //init Pangle ad manager
         TTAdManager mTTAdManager = TTAdSdk.getAdManager();
+
+        //noinspection deprecation
+        mTTAdManager.setData(getUserData());
+
         TTAdNative mTTAdNative = mTTAdManager.createAdNative(context.getApplicationContext());
 
         AdSlot adSlot = new AdSlot.Builder()
@@ -104,8 +109,6 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
                 return;
             }
             mTTNativeExpressAd = ads.get(0);
-            // add ad refresh if need
-            //mTTNativeExpressAd.setSlideIntervalTime(mIntervalTime);
             mTTNativeExpressAd.setExpressInteractionListener(mExpressAdInteractionListener);
             bindDislike(mTTNativeExpressAd);
             mTTNativeExpressAd.render();
@@ -180,5 +183,25 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
 
             }
         });
+    }
+
+    private static String getUserData() {
+        String result = "";
+        try {
+            JSONArray adData = new JSONArray();
+            JSONObject mediationObject = new JSONObject();
+            mediationObject.putOpt("name", "mediation");
+            mediationObject.putOpt("value", "admob");
+            adData.put(mediationObject);
+
+            JSONObject adapterVersionObject = new JSONObject();
+            adapterVersionObject.putOpt("name", "adapter_version");
+            adapterVersionObject.putOpt("value", "1.2.1");
+            adData.put(adapterVersionObject);
+            result = adData.toString();
+        } catch (Exception e) {
+
+        }
+        return result;
     }
 }

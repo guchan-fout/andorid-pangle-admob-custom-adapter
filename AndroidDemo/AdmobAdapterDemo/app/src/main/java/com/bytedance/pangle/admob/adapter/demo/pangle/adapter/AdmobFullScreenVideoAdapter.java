@@ -15,6 +15,7 @@ import com.google.android.gms.ads.mediation.MediationAdRequest;
 import com.google.android.gms.ads.mediation.customevent.CustomEventInterstitial;
 import com.google.android.gms.ads.mediation.customevent.CustomEventInterstitialListener;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -56,6 +57,10 @@ public class AdmobFullScreenVideoAdapter implements CustomEventInterstitial {
 
         //init Pangle ad manager
         TTAdManager mTTAdManager = TTAdSdk.getAdManager();
+
+        //noinspection deprecation
+        mTTAdManager.setData(getUserData());
+
         TTAdNative mTTAdNative = mTTAdManager.createAdNative(context.getApplicationContext());
 
         AdSlot adSlot = new AdSlot.Builder()
@@ -164,5 +169,25 @@ public class AdmobFullScreenVideoAdapter implements CustomEventInterstitial {
             }
         }
         return "";
+    }
+
+    private static String getUserData() {
+        String result = "";
+        try {
+            JSONArray adData = new JSONArray();
+            JSONObject mediationObject = new JSONObject();
+            mediationObject.putOpt("name", "mediation");
+            mediationObject.putOpt("value", "admob");
+            adData.put(mediationObject);
+
+            JSONObject adapterVersionObject = new JSONObject();
+            adapterVersionObject.putOpt("name", "adapter_version");
+            adapterVersionObject.putOpt("value", "1.2.1");
+            adData.put(adapterVersionObject);
+            result = adData.toString();
+        } catch (Exception e) {
+
+        }
+        return result;
     }
 }
