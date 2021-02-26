@@ -41,9 +41,6 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
 
     private CustomEventBannerListener mCustomEventBannerListener;
 
-    // ad refresh interval time. ms
-    //private int mIntervalTime = 30 * 1000;
-
     private Context mContext = null;
 
     @Override
