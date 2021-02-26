@@ -55,7 +55,8 @@ class MainActivity : AppCompatActivity() {
             "Native",
             "Interstitial",
             "Template Native Feed",
-            "Template Banner"
+            "Template Banner",
+            "Adaptive Banner"
         )
         val adapter =
             RecyclerAdapter(list)
@@ -88,6 +89,10 @@ class MainActivity : AppCompatActivity() {
                     }
                     4 -> {
                         val intent = Intent(this@MainActivity, TemplateBannerAdActivity::class.java)
+                        startActivity(intent)
+                    }
+                    5 -> {
+                        val intent = Intent(this@MainActivity, AdaptiveBannerAdActivity::class.java)
                         startActivity(intent)
                     }
                     else -> {
