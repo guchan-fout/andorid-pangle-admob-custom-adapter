@@ -95,4 +95,4 @@ and [Initialize Pangle SDK](https://www.pangleglobal.com/help/doc/6034a671bc3f04
 <br>
 <img src="./pics/adapter-download.png" alt="drawing" width="400"/>
 
-- You can find simple use cases from [Demo](./AndroidDemo).
+- You can find simple use cases from [Demo](../AndroidDemo).

@@ -97,4 +97,4 @@
 <img src="./pics/adapter-download.png" alt="drawing" width="400"/>
 
 
-- [Demo](./AndroidDemo)から簡単な使用例を確認できます。
+- [Demo](../AndroidDemo)から簡単な使用例を確認できます。
