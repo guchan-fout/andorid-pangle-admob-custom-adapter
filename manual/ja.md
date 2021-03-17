@@ -87,7 +87,6 @@
 
  * **[app ID](#app-id)を使用してPangleSDKを初期化してください。**
 
-### Embed Pangle Adapters
 
 ### Pangle Adaptersの導入
 - Pangleプラットフォームから、`SDK Integration` -> `SDK download`をクリックすると、各広告フォーマット用のアダプターをダウンロードでき、アダプターファイルをアプリに導入すればコードを変更せずに使用できます。また、ユースケースに合わせてカスタマイズすることもできます。
