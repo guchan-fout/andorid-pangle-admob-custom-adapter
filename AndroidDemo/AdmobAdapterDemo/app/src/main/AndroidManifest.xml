@@ -16,7 +16,6 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".AdaptiveBannerAdActivity"
-            android:label="@string/title_activity_adaptive_banner_ad"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

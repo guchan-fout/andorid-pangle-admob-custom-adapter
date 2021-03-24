@@ -6,19 +6,18 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.bytedance.sdk.openadsdk.AdSlot;
-import com.bytedance.sdk.openadsdk.TTAdConstant;
 import com.bytedance.sdk.openadsdk.TTAdManager;
 import com.bytedance.sdk.openadsdk.TTAdNative;
-import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.bytedance.sdk.openadsdk.TTFullScreenVideoAd;
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.mediation.MediationAdRequest;
 import com.google.android.gms.ads.mediation.customevent.CustomEventInterstitial;
 import com.google.android.gms.ads.mediation.customevent.CustomEventInterstitialListener;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+
 
 /**
  * Adapter for Full Screen Video ad, please set this with package name on Admob
@@ -56,18 +55,12 @@ public class AdmobFullScreenVideoAdapter implements CustomEventInterstitial {
         }
 
         //init Pangle ad manager
-        TTAdManager mTTAdManager = TTAdSdk.getAdManager();
-
-        //noinspection deprecation
-        mTTAdManager.setData(getUserData());
-
+        TTAdManager mTTAdManager = AdmobAdapterUtil.getPangleSdkManager();
         TTAdNative mTTAdNative = mTTAdManager.createAdNative(context.getApplicationContext());
 
         AdSlot adSlot = new AdSlot.Builder()
                 .setCodeId(mPlacementID)
-                .setSupportDeepLink(true)
                 .setImageAcceptedSize(1080, 1920)
-                .setOrientation(TTAdConstant.VERTICAL)//required parameter ，Set how you wish the video ad to be displayed ,choose from TTAdConstant.HORIZONTAL or TTAdConstant.VERTICAL
                 .build();
 
         mTTAdNative.loadFullScreenVideoAd(adSlot, mTTFullScreenAdListener);
@@ -78,7 +71,7 @@ public class AdmobFullScreenVideoAdapter implements CustomEventInterstitial {
         if (mttFullVideoAd != null && mIsLoadSuccess.get()) {
             this.mttFullVideoAd.showFullScreenVideoAd((Activity) this.mContext);
         } else {
-            Log.e(ADAPTER_NAME, "Ad not loaded.");
+            Log.e(ADAPTER_NAME,"Ad not loaded.");
         }
     }
 
@@ -88,10 +81,11 @@ public class AdmobFullScreenVideoAdapter implements CustomEventInterstitial {
         public void onError(int i, String s) {
             mIsLoadSuccess.set(false);
             if (mAdmobAdListener != null) {
-                mAdmobAdListener.onAdFailedToLoad(i);
+                mAdmobAdListener.onAdFailedToLoad(new AdError(i, "Pangle Ad Failed to load.", s));
             }
             Log.e(ADAPTER_NAME, "Pangle Ad Failed to load, error code is:" + i + ", msg:" + s);
-            AdmobFullScreenVideoAdapter.this.mAdmobAdListener.onAdFailedToLoad(i);
+            AdmobFullScreenVideoAdapter.this.mAdmobAdListener.onAdFailedToLoad(new AdError(i,
+                    "Pangle Ad Failed to load.", s));
         }
 
         @Override
@@ -168,26 +162,7 @@ public class AdmobFullScreenVideoAdapter implements CustomEventInterstitial {
                 Log.e(ADAPTER_NAME, "Could not parse malformed JSON: " + serverParameters);
             }
         }
-        return "";
+        return"";
     }
 
-    private static String getUserData() {
-        String result = "";
-        try {
-            JSONArray adData = new JSONArray();
-            JSONObject mediationObject = new JSONObject();
-            mediationObject.putOpt("name", "mediation");
-            mediationObject.putOpt("value", "admob");
-            adData.put(mediationObject);
-
-            JSONObject adapterVersionObject = new JSONObject();
-            adapterVersionObject.putOpt("name", "adapter_version");
-            adapterVersionObject.putOpt("value", "1.2.1");
-            adData.put(adapterVersionObject);
-            result = adData.toString();
-        } catch (Exception e) {
-
-        }
-        return result;
-    }
 }

@@ -11,14 +11,13 @@ import com.bytedance.sdk.openadsdk.AdSlot;
 import com.bytedance.sdk.openadsdk.TTAdDislike;
 import com.bytedance.sdk.openadsdk.TTAdManager;
 import com.bytedance.sdk.openadsdk.TTAdNative;
-import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.bytedance.sdk.openadsdk.TTNativeExpressAd;
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.mediation.MediationAdRequest;
 import com.google.android.gms.ads.mediation.customevent.CustomEventBanner;
 import com.google.android.gms.ads.mediation.customevent.CustomEventBannerListener;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -48,18 +47,14 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
         this.mContext = context;
         this.mCustomEventBannerListener = customEventBannerListener;
         this.mPlacementID = getPlacementId(serverParameter);
-        Log.d("PlacementId:", mPlacementID);
+        Log.d("PlacementId:", mPlacementID + ",adSize-getWidth=" + adSize.getWidth() + ",getHeight=" + adSize.getHeight());
         if (mPlacementID.isEmpty()) {
             Log.e(ADAPTER_NAME, "mediation PlacementID is null");
             return;
         }
 
-        //init Pangle ad manager
-        TTAdManager mTTAdManager = TTAdSdk.getAdManager();
-
-        //noinspection deprecation
-        mTTAdManager.setData(getUserData());
-
+        //(notice : make sure the Pangle sdk had been initialized) obtain Pangle ad manager
+        TTAdManager mTTAdManager = AdmobAdapterUtil.getPangleSdkManager();
         TTAdNative mTTAdNative = mTTAdManager.createAdNative(context.getApplicationContext());
 
         AdSlot adSlot = new AdSlot.Builder()
@@ -74,7 +69,9 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
 
     @Override
     public void onDestroy() {
-
+        if (mTTNativeExpressAd != null) {
+            mTTNativeExpressAd.destroy();
+        }
     }
 
     @Override
@@ -94,7 +91,7 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
         public void onError(int code, String message) {
             Log.e(ADAPTER_NAME, " onBannerFailed.-code=" + code + "," + message);
             if (mCustomEventBannerListener != null) {
-                mCustomEventBannerListener.onAdFailedToLoad(code);
+                mCustomEventBannerListener.onAdFailedToLoad(new AdError(code, message, message));
             }
         }
 
@@ -133,7 +130,7 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
         public void onRenderFail(View view, String msg, int code) {
             Log.e(ADAPTER_NAME, " onBannerFailed.-code=" + code + "," + msg);
             if (mCustomEventBannerListener != null) {
-                mCustomEventBannerListener.onAdFailedToLoad(code);
+                mCustomEventBannerListener.onAdFailedToLoad(new AdError(code, msg, msg));
             }
         }
 
@@ -180,25 +177,5 @@ public class AdmobTemplateBannerAdapter implements CustomEventBanner {
 
             }
         });
-    }
-
-    private static String getUserData() {
-        String result = "";
-        try {
-            JSONArray adData = new JSONArray();
-            JSONObject mediationObject = new JSONObject();
-            mediationObject.putOpt("name", "mediation");
-            mediationObject.putOpt("value", "admob");
-            adData.put(mediationObject);
-
-            JSONObject adapterVersionObject = new JSONObject();
-            adapterVersionObject.putOpt("name", "adapter_version");
-            adapterVersionObject.putOpt("value", "1.2.1");
-            adData.put(adapterVersionObject);
-            result = adData.toString();
-        } catch (Exception e) {
-
-        }
-        return result;
     }
 }

@@ -6,11 +6,12 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.bytedance.sdk.openadsdk.AdSlot;
-import com.bytedance.sdk.openadsdk.TTAdConstant;
 import com.bytedance.sdk.openadsdk.TTAdManager;
 import com.bytedance.sdk.openadsdk.TTAdNative;
 import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.bytedance.sdk.openadsdk.TTRewardVideoAd;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.mediation.Adapter;
 import com.google.android.gms.ads.mediation.InitializationCompleteCallback;
 import com.google.android.gms.ads.mediation.MediationAdLoadCallback;
@@ -21,7 +22,6 @@ import com.google.android.gms.ads.mediation.MediationRewardedAdConfiguration;
 import com.google.android.gms.ads.mediation.VersionInfo;
 import com.google.android.gms.ads.rewarded.RewardItem;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
     private TTRewardVideoAd mttRewardVideoAd;
     private AtomicBoolean isLoadSuccess = new AtomicBoolean(false);
 
-    private TTRewardVideoAd.RewardAdInteractionListener TikTokRewardedInteractiveListener = new TTRewardVideoAd.RewardAdInteractionListener() {
+    private TTRewardVideoAd.RewardAdInteractionListener PangleRewardedInteractiveListener = new TTRewardVideoAd.RewardAdInteractionListener() {
         @Override
         public void onAdShow() {
             if (mAdmobRewardedAdCallback != null) {
@@ -73,7 +73,9 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
         @Override
         public void onVideoError() {
             if (mAdmobRewardedAdCallback != null) {
-                mAdmobRewardedAdCallback.onAdFailedToShow("");
+                mAdmobRewardedAdCallback.onAdFailedToShow(new AdError(AdRequest.ERROR_CODE_INVALID_REQUEST,
+                        "onVideoError",
+                        "onVideoError"));
             }
         }
 
@@ -114,7 +116,7 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
             isLoadSuccess.set(false);
             Log.e(ADAPTER_NAME, "loadRewardVideoAd.........errorCode =" + i + ",msg=" + msg);
             if (mAdmobAdLoadCallback != null) {
-                AdmobRewardVideoAdapter.this.mAdmobAdLoadCallback.onFailure(msg);
+                AdmobRewardVideoAdapter.this.mAdmobAdLoadCallback.onFailure(new AdError(i, msg, msg));
             }
         }
 
@@ -123,7 +125,7 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
             isLoadSuccess.set(true);
             Log.d(ADAPTER_NAME, "onRewardVideoAdLoad.........onRewardVideoAdLoad");
             mttRewardVideoAd = ttRewardVideoAd;
-            mttRewardVideoAd.setRewardAdInteractionListener(TikTokRewardedInteractiveListener);
+            mttRewardVideoAd.setRewardAdInteractionListener(PangleRewardedInteractiveListener);
             if (mAdmobAdLoadCallback != null) {
                 mAdmobRewardedAdCallback = mAdmobAdLoadCallback.onSuccess(AdmobRewardVideoAdapter.this);
             }
@@ -154,8 +156,9 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
         Context context = mediationRewardedAdConfiguration.getContext();
         if (!(context instanceof Activity)) {
             String logMessage = "Pangle SDK requires an Activity context to load ads.";
-            Log.w(ADAPTER_NAME, "Pangle SDK requires an Activity context to load ads.");
-            mediationAdLoadCallback.onFailure(logMessage);
+            Log.w(ADAPTER_NAME, logMessage);
+            mediationAdLoadCallback.onFailure(new AdError(AdRequest.ERROR_CODE_INVALID_REQUEST,
+                    logMessage, logMessage));
             return;
         }
 
@@ -171,23 +174,13 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
 
         this.mAdmobAdLoadCallback = mediationAdLoadCallback;
 
-        //init Pangle ad manager
-        TTAdManager mTTAdManager = TTAdSdk.getAdManager();
-
-        //noinspection deprecation
-        mTTAdManager.setData(getUserData());
-
+        //(notice : make sure the Pangle sdk had been initialized) obtain Pangle ad manager
+        TTAdManager mTTAdManager = AdmobAdapterUtil.getPangleSdkManager();
         TTAdNative mTTAdNative = mTTAdManager.createAdNative(context.getApplicationContext());
 
         AdSlot adSlot = new AdSlot.Builder()
                 .setCodeId(placementID)
-                .setSupportDeepLink(true)
                 .setImageAcceptedSize(1080, 1920) //Set size to fit your ad slot size
-                .setRewardName("your reward's name") //Parameter for rewarded video ad requests, name of the reward
-                .setRewardAmount(1)  // The number of rewards in rewarded video ad
-                .setUserID("your app user id")//User ID, a required parameter for rewarded video ads
-                .setMediaExtra("media_extra") //optional parameter
-                .setOrientation(TTAdConstant.VERTICAL) //Set how you wish the video ad to be displayed, choose from TTAdConstant.HORIZONTAL or TTAdConstant.VERTICAL
                 .build();
 
         //load ad
@@ -213,7 +206,7 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
     public void showAd(Context context) {
         if (!(context instanceof Activity)) {
             // Context not an Activity context, fail the initialization.
-            Log.e(ADAPTER_NAME, "Pangle SDK requires an Activity context to initialize");
+            Log.e(ADAPTER_NAME,"Pangle SDK requires an Activity context to initialize");
             return;
         }
         if (mttRewardVideoAd != null && isLoadSuccess.get()) {
@@ -242,25 +235,5 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
         }
 
         return "";
-    }
-
-    private static String getUserData() {
-        String result = "";
-        try {
-            JSONArray adData = new JSONArray();
-            JSONObject mediationObject = new JSONObject();
-            mediationObject.putOpt("name", "mediation");
-            mediationObject.putOpt("value", "admob");
-            adData.put(mediationObject);
-
-            JSONObject adapterVersionObject = new JSONObject();
-            adapterVersionObject.putOpt("name", "adapter_version");
-            adapterVersionObject.putOpt("value", "1.2.1");
-            adData.put(adapterVersionObject);
-            result = adData.toString();
-        } catch (Exception e) {
-
-        }
-        return result;
     }
 }

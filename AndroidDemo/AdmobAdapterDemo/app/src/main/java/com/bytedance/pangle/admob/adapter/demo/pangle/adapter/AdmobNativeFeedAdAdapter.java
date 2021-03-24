@@ -15,22 +15,21 @@ import com.bytedance.sdk.openadsdk.AdSlot;
 import com.bytedance.sdk.openadsdk.TTAdConstant;
 import com.bytedance.sdk.openadsdk.TTAdManager;
 import com.bytedance.sdk.openadsdk.TTAdNative;
-import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.bytedance.sdk.openadsdk.TTFeedAd;
 import com.bytedance.sdk.openadsdk.TTImage;
 import com.bytedance.sdk.openadsdk.TTNativeAd;
 import com.bytedance.sdk.openadsdk.adapter.MediaView;
 import com.bytedance.sdk.openadsdk.adapter.MediationAdapterUtil;
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.formats.NativeAd;
-import com.google.android.gms.ads.formats.NativeAdOptions;
-import com.google.android.gms.ads.formats.UnifiedNativeAdAssetNames;
 import com.google.android.gms.ads.mediation.NativeMediationAdRequest;
 import com.google.android.gms.ads.mediation.UnifiedNativeAdMapper;
 import com.google.android.gms.ads.mediation.customevent.CustomEventNative;
 import com.google.android.gms.ads.mediation.customevent.CustomEventNativeListener;
+import com.google.android.gms.ads.nativead.NativeAdAssetNames;
+import com.google.android.gms.ads.nativead.NativeAdOptions;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -65,27 +64,25 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
             return;
         }
 
-        mNativeAdOptions = nativeMediationAdRequest.getNativeAdOptions();
+        mNativeAdOptions = nativeMediationAdRequest.getNativeAdRequestOptions();
 
         if (!nativeMediationAdRequest.isUnifiedNativeAdRequested()) {
             Log.e(ADAPTER_NAME, "Failed to load ad. Request must be for unified native ads.");
-            if (customEventNativeListener != null)
-                customEventNativeListener.onAdFailedToLoad(AdRequest.ERROR_CODE_INVALID_REQUEST);
+            if (customEventNativeListener != null){
+                customEventNativeListener.onAdFailedToLoad(new AdError(AdRequest.ERROR_CODE_INVALID_REQUEST,
+                        "Failed to load ad.",
+                        "Failed to load ad. Request must be for unified native ads."));
+            }
             return;
         }
 
 
-        //init Pangle ad manager
-        TTAdManager mTTAdManager = TTAdSdk.getAdManager();
-
-        //noinspection deprecation
-        mTTAdManager.setData(getUserData());
-
+        //(notice : make sure the Pangle sdk had been initialized) obtain Pangle ad manager
+        TTAdManager mTTAdManager = AdmobAdapterUtil.getPangleSdkManager();
         TTAdNative mTTAdNative = mTTAdManager.createAdNative(context.getApplicationContext());
 
         AdSlot adSlot = new AdSlot.Builder()
                 .setCodeId(mPlacementID)
-                .setSupportDeepLink(true)
                 .setImageAcceptedSize(640, 320) //Set size to fit your ad slot size
                 .setAdCount(1) //ad count from 1 to 3
                 .build();
@@ -99,7 +96,9 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
         public void onError(int code, String message) {
             Log.e(ADAPTER_NAME, "feedAdListener loaded fail .code=" + code + ",message=" + message);
             if (mCustomEventNativeListener != null) {
-                mCustomEventNativeListener.onAdFailedToLoad(getAdmobError(code));
+                mCustomEventNativeListener.onAdFailedToLoad(new AdError(getAdmobError(code),
+                        "feedAdListener loaded fail ",
+                        message));
             }
         }
 
@@ -107,7 +106,9 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
         public void onFeedAdLoad(List<TTFeedAd> ads) {
             if (ads == null || ads.size() == 0) {
                 if (mCustomEventNativeListener != null) {
-                    mCustomEventNativeListener.onAdFailedToLoad(AdRequest.ERROR_CODE_NO_FILL);
+                    mCustomEventNativeListener.onAdFailedToLoad(new AdError(AdRequest.ERROR_CODE_NO_FILL,
+                            "feedAdListener loaded succes .",
+                            "feedAdListener loaded success .but ad no fill "));
                 }
                 Log.e(ADAPTER_NAME, "feedAdListener loaded success .but ad no fill ");
                 return;
@@ -208,7 +209,7 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
 
 
             ArrayList<View> assetViews = new ArrayList<>(clickableAssetViews.values());
-            View creativeBtn = clickableAssetViews.get(UnifiedNativeAdAssetNames.ASSET_CALL_TO_ACTION);
+            View creativeBtn = clickableAssetViews.get(NativeAdAssetNames.ASSET_CALL_TO_ACTION);
             ArrayList<View> creativeViews = new ArrayList<>();
             if (creativeBtn != null) {
                 creativeViews.add(creativeBtn);
@@ -259,42 +260,49 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
                     return;
                 }
 
-                ImageView privacyInformationIconImageView = (ImageView) mPangleAd.getAdLogoView();
-                privacyInformationIconImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mPangleAd.showPrivacyActivity();
-                        Log.d(ADAPTER_NAME, "privacyInformationIconImageView--》click");
-                    }
-                });
-
-                privacyInformationIconImageView.setVisibility(View.VISIBLE);
-                ((ViewGroup) overlayView).addView(privacyInformationIconImageView);
-
-                float scale = context.getResources().getDisplayMetrics().density;
-                int icon_size_px = (int) ((10 * scale + 0.5f) * scale + 0.5);
-
-                FrameLayout.LayoutParams params =
-                        new FrameLayout.LayoutParams(icon_size_px, icon_size_px);
-
-                switch (privacyIconPlacement) {
-                    case NativeAdOptions.ADCHOICES_TOP_LEFT:
-                        params.gravity = Gravity.TOP | Gravity.START;
-                        break;
-                    case NativeAdOptions.ADCHOICES_BOTTOM_RIGHT:
-                        params.gravity = Gravity.BOTTOM | Gravity.END;
-                        break;
-                    case NativeAdOptions.ADCHOICES_BOTTOM_LEFT:
-                        params.gravity = Gravity.BOTTOM | Gravity.START;
-                        break;
-                    case NativeAdOptions.ADCHOICES_TOP_RIGHT:
-                        params.gravity = Gravity.TOP | Gravity.END;
-                        break;
-                    default:
-                        params.gravity = Gravity.TOP | Gravity.END;
+                ImageView privacyInformationIconImageView = null;
+                if(mPangleAd != null) {
+                    privacyInformationIconImageView =   (ImageView) mPangleAd.getAdLogoView();
                 }
-                privacyInformationIconImageView.setLayoutParams(params);
+
+                if (privacyInformationIconImageView != null) {
+                    privacyInformationIconImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mPangleAd.showPrivacyActivity();
+                            Log.d(ADAPTER_NAME, "privacyInformationIconImageView--》click");
+                        }
+                    });
+
+                    privacyInformationIconImageView.setVisibility(View.VISIBLE);
+                    ((ViewGroup) overlayView).addView(privacyInformationIconImageView);
+
+                    float scale = context.getResources().getDisplayMetrics().density;
+                    int icon_size_px = (int) ((10 * scale + 0.5f) * scale + 0.5);
+
+                    FrameLayout.LayoutParams params =
+                            new FrameLayout.LayoutParams(icon_size_px, icon_size_px);
+
+                    switch (privacyIconPlacement) {
+                        case NativeAdOptions.ADCHOICES_TOP_LEFT:
+                            params.gravity = Gravity.TOP | Gravity.START;
+                            break;
+                        case NativeAdOptions.ADCHOICES_BOTTOM_RIGHT:
+                            params.gravity = Gravity.BOTTOM | Gravity.END;
+                            break;
+                        case NativeAdOptions.ADCHOICES_BOTTOM_LEFT:
+                            params.gravity = Gravity.BOTTOM | Gravity.START;
+                            break;
+                        case NativeAdOptions.ADCHOICES_TOP_RIGHT:
+                            params.gravity = Gravity.TOP | Gravity.END;
+                            break;
+                        default:
+                            params.gravity = Gravity.TOP | Gravity.END;
+                    }
+                    privacyInformationIconImageView.setLayoutParams(params);
+                }
                 adView.requestLayout();
+
             }
         }
     }
@@ -373,29 +381,9 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
             case -1:
             case -4:
                 return AdRequest.ERROR_CODE_INTERNAL_ERROR;
+            default:
+                return errorCode;
         }
-
-        return errorCode;
-    }
-
-    private static String getUserData() {
-        String result = "";
-        try {
-            JSONArray adData = new JSONArray();
-            JSONObject mediationObject = new JSONObject();
-            mediationObject.putOpt("name", "mediation");
-            mediationObject.putOpt("value", "admob");
-            adData.put(mediationObject);
-
-            JSONObject adapterVersionObject = new JSONObject();
-            adapterVersionObject.putOpt("name", "adapter_version");
-            adapterVersionObject.putOpt("value", "1.2.1");
-            adData.put(adapterVersionObject);
-            result = adData.toString();
-        } catch (Exception e) {
-
-        }
-        return result;
     }
 }
 
