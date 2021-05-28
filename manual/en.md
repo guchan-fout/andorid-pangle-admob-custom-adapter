@@ -71,7 +71,7 @@
   <img src="./pics/class-name.png" alt="drawing" width="400"/>
 
 - Add `{"placementID":"your slot ID"}` to Parameter.
-    - **Parameter**: Add {"placementID":"[your placement ID on Pangle](#placementID)"} to Parameter , for example,`{"placementID":"1234567"`
+    - **Parameter**: Add {"placementID":"[your placement ID on Pangle](#placementID)"} to Parameter , for example,`{"placementID":"1234567"}`
 
 
 <img src="./pics/mediation-param.png" alt="drawing" width="400"/>
