@@ -30,16 +30,7 @@ class MainActivity : AppCompatActivity() {
             Timber.d("initialize AdMob")
         }
 
-        TTAdSdk.init(
-            this,
-            TTAdConfig.Builder()
-                .appId("5081617") // Please use your own appId, this is for demo
-                .debug(BuildConfig.DEBUG)
-                .useTextureView(true) // Use TextureView to play the video. The default setting is SurfaceView, when the context is in conflict with SurfaceView, you can use TextureView
-                .coppa(0) // Fields to indicate whether you are a child or an adult ，0:adult ，1:child
-                .setGDPR(0) //Fields to indicate whether you are protected by GDPR,  the value of GDPR : 0 close GDRP Privacy protection ，1: open GDRP Privacy protection
-                .build()
-        )
+        TTAdSdk.init(this, buildAdConfig(), mInitCallback)
 
         val list = arrayOf(
             "Reward Video",
@@ -91,5 +82,29 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun buildAdConfig(): TTAdConfig {
+        return TTAdConfig.Builder()
+            // Please use your own appId, this is for demo
+            .appId("5081617")
+            // Turn it on during the testing phase, you can troubleshoot with the log, remove it after launching the app
+            .debug(BuildConfig.DEBUG)
+            // The default setting is SurfaceView. We strongly recommend to set this to true.
+            // If using TextureView to play the video, please set this and add "WAKE_LOCK" permission in manifest
+            .useTextureView(true)
+            // Fields to indicate whether you are a child or an adult ，0:adult ，1:child
+            .coppa(0)
+            .build()
+    }
+
+    private val mInitCallback: TTAdSdk.InitCallback = object : TTAdSdk.InitCallback {
+        override fun success() {
+            Timber.d("init succeeded")
+        }
+
+        override fun fail(p0: Int, p1: String?) {
+            Timber.d("init failed. reason = $p1")
+        }
     }
 }
