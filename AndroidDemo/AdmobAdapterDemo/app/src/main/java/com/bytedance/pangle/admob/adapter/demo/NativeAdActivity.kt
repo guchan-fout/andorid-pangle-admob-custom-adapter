@@ -6,21 +6,29 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.RatingBar
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bytedance.pangle.admob.adapter.demo.pangle.adapter.AdmobNativeFeedAdAdapter
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.formats.MediaView
-import com.google.android.gms.ads.formats.UnifiedNativeAd
-import com.google.android.gms.ads.formats.UnifiedNativeAdView
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.nativead.MediaView
+import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.nativead.NativeAdOptions
+import com.google.android.gms.ads.nativead.NativeAdView
 import kotlinx.android.synthetic.main.activity_native_ad.*
+import timber.log.Timber
+
+const val ADMOB_AD_UNIT_ID = "ca-app-pub-2748478898138855/5247133926"
 
 class NativeAdActivity : AppCompatActivity() {
 
-    var currentNativeAd: UnifiedNativeAd? = null
+    var currentNativeAd: NativeAd? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,44 +37,101 @@ class NativeAdActivity : AppCompatActivity() {
     }
 
     private fun loadUnifiedNativeAd() {
-        val builder = AdLoader.Builder(this, "ca-app-pub-2748478898138855/5247133926")
+        Timber.d("Load Native Ad.")
 
-        builder.forUnifiedNativeAd { unifiedNativeAd ->
+        val adLoader = AdLoader.Builder(this, ADMOB_AD_UNIT_ID)
+            .forNativeAd { ad: NativeAd ->
+                // Show the ad.
+                var activityDestroyed = false
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    activityDestroyed = isDestroyed
+                }
+                if (activityDestroyed || isFinishing || isChangingConfigurations) {
+                    ad.destroy()
+                    return@forNativeAd
+                }
+                // You must call destroy on old ads when you are done with them,
+                // otherwise you will have a memory leak.
+                currentNativeAd?.destroy()
+                currentNativeAd = ad
+                val adView = layoutInflater
+                    .inflate(R.layout.ad_unified, null) as NativeAdView
+                populateNativeAdView(ad, adView)
+                ad_frame.removeAllViews()
+                ad_frame.addView(adView)
+            }
+            .withAdListener(object : AdListener() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    // Handle the failure by logging, altering the UI, and so on.
+                    Timber.d("Ad failed to loade " + adError.message)
+                }
+
+                override fun onAdLoaded() {
+                    Timber.d("Ad loaded")
+                }
+            })
+            .withNativeAdOptions(
+                NativeAdOptions.Builder()
+                    // Methods in the NativeAdOptions.Builder class can be
+                    // used here to specify individual options settings.
+                    .build()
+            )
+            .build()
+
+        adLoader.loadAd(AdRequest.Builder().build())
+
+/*
+        val builder = AdLoader.Builder(this, ADMOB_AD_UNIT_ID)
+
+        builder.forNativeAd { nativeAd ->
             // OnUnifiedNativeAdLoadedListener implementation.
             // If this callback occurs after the activity is destroyed, you must call
             // destroy and return or you may get a memory leak.
-            if (isFinishing || isChangingConfigurations) {
-                unifiedNativeAd.destroy()
-                return@forUnifiedNativeAd
+
+            Timber.d("Load Native nativeAd here.")
+            var activityDestroyed = false
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                activityDestroyed = isDestroyed
+            }
+            if (activityDestroyed || isFinishing || isChangingConfigurations) {
+                nativeAd.destroy()
+                return@forNativeAd
             }
             // You must call destroy on old ads when you are done with them,
             // otherwise you will have a memory leak.
             currentNativeAd?.destroy()
-            currentNativeAd = unifiedNativeAd
+            currentNativeAd = nativeAd
             val adView = layoutInflater
-                .inflate(R.layout.ad_unified, null) as UnifiedNativeAdView
-            populateUnifiedNativeAdView(unifiedNativeAd, adView)
+                .inflate(R.layout.ad_unified, null) as NativeAdView
+            populateNativeAdView(nativeAd, adView)
             ad_frame.removeAllViews()
             ad_frame.addView(adView)
+
+            val adLoader = builder.withAdListener(object : AdListener() {
+                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                    Toast.makeText(
+                        this@NativeAdActivity, "Failed to load native ad with error",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                override fun onAdLoaded() {
+                    Toast.makeText(
+                        this@NativeAdActivity, "Native ad loaded.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }).build()
+
+            adLoader.loadAd(AdRequest.Builder().build())
         }
 
-
-        val adLoader = builder.withAdListener(object : AdListener() {
-            override fun onAdFailedToLoad(errorCode: Int) {
-                Toast.makeText(
-                    this@NativeAdActivity,
-                    "Failed to load native ad: " + errorCode,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }).build()
-
-        adLoader.loadAd(AdRequest.Builder().build()) //or use loadAds to load multiple items
+ */
     }
 
-    private fun populateUnifiedNativeAdView(
-        nativeAd: UnifiedNativeAd,
-        adView: UnifiedNativeAdView
+    private fun populateNativeAdView(
+        nativeAd: NativeAd,
+        adView: NativeAdView
     ) {
         // Set the media view. Media content will be automatically populated in the media view once
         // adView.setNativeAd() is called.

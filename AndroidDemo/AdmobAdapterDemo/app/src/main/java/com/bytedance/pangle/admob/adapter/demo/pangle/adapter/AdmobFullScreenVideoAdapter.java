@@ -71,7 +71,7 @@ public class AdmobFullScreenVideoAdapter implements CustomEventInterstitial {
         if (mttFullVideoAd != null && mIsLoadSuccess.get()) {
             this.mttFullVideoAd.showFullScreenVideoAd((Activity) this.mContext);
         } else {
-            Log.e(ADAPTER_NAME,"Ad not loaded.");
+            Log.e(ADAPTER_NAME, "Ad not loaded.");
         }
     }
 
@@ -162,7 +162,7 @@ public class AdmobFullScreenVideoAdapter implements CustomEventInterstitial {
                 Log.e(ADAPTER_NAME, "Could not parse malformed JSON: " + serverParameters);
             }
         }
-        return"";
+        return "";
     }
 
 }

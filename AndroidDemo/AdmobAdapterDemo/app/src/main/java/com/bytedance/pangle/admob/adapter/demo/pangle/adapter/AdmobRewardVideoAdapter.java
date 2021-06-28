@@ -81,7 +81,7 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
 
         @Override
         //Call back of video ad completion and reward validation. The parameters are valid, the number of rewards, and the name of the reward.
-        public void onRewardVerify(boolean rewardVerify, int rewardAmount, String rewardName) {
+        public void onRewardVerify(boolean rewardVerify, int rewardAmount, String rewardName, int errorCode, String errorMsg) {
 
             if (rewardVerify) {
                 final String rewardType = rewardName;
@@ -206,7 +206,7 @@ public class AdmobRewardVideoAdapter extends Adapter implements MediationRewarde
     public void showAd(Context context) {
         if (!(context instanceof Activity)) {
             // Context not an Activity context, fail the initialization.
-            Log.e(ADAPTER_NAME,"Pangle SDK requires an Activity context to initialize");
+            Log.e(ADAPTER_NAME, "Pangle SDK requires an Activity context to initialize");
             return;
         }
         if (mttRewardVideoAd != null && isLoadSuccess.get()) {

@@ -23,7 +23,7 @@ public class AdmobAdapterUtil {
             adapterVersionObject.putOpt("value", "1.3.0");
             adData.put(adapterVersionObject);
             result = adData.toString();
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
         return result;

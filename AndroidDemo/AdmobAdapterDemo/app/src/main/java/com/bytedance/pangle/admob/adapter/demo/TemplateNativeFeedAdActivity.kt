@@ -6,10 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bytedance.pangle.admob.adapter.demo.adapter.ContentAdapter
 import com.bytedance.pangle.admob.adapter.demo.model.CellContent
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.*
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
@@ -54,7 +51,7 @@ class TemplateNativeFeedAdActivity : AppCompatActivity() {
                 adapter.notifyItemInserted(adPosition)
             }
 
-            override fun onAdFailedToLoad(adError: Int) {
+            override fun onAdFailedToLoad(p0: LoadAdError) {
                 Timber.d("onAdFailedToLoad")
             }
 
@@ -65,10 +62,6 @@ class TemplateNativeFeedAdActivity : AppCompatActivity() {
 
             override fun onAdClicked() {
                 // Code to be executed when the user clicks on an ad.
-            }
-
-            override fun onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
             }
 
             override fun onAdClosed() {

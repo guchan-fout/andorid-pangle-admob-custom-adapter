@@ -68,7 +68,7 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
 
         if (!nativeMediationAdRequest.isUnifiedNativeAdRequested()) {
             Log.e(ADAPTER_NAME, "Failed to load ad. Request must be for unified native ads.");
-            if (customEventNativeListener != null){
+            if (customEventNativeListener != null) {
                 customEventNativeListener.onAdFailedToLoad(new AdError(AdRequest.ERROR_CODE_INVALID_REQUEST,
                         "Failed to load ad.",
                         "Failed to load ad. Request must be for unified native ads."));
@@ -261,8 +261,8 @@ public class AdmobNativeFeedAdAdapter implements CustomEventNative {
                 }
 
                 ImageView privacyInformationIconImageView = null;
-                if(mPangleAd != null) {
-                    privacyInformationIconImageView =   (ImageView) mPangleAd.getAdLogoView();
+                if (mPangleAd != null) {
+                    privacyInformationIconImageView = (ImageView) mPangleAd.getAdLogoView();
                 }
 
                 if (privacyInformationIconImageView != null) {

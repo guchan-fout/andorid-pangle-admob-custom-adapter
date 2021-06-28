@@ -2,51 +2,60 @@ package com.bytedance.pangle.admob.adapter.demo
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import timber.log.Timber
+
 
 class FullScreenVideoActivity : AppCompatActivity() {
 
-    private lateinit var mInterstitialAd: InterstitialAd
+    private var mInterstitialAd: InterstitialAd? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_full_screen_video)
 
-        mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = "ca-app-pub-2748478898138855/6478494541"
+        val adRequest = AdRequest.Builder().build()
+        InterstitialAd.load(
+            this,
+            "ca-app-pub-2748478898138855/6478494541",
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    // The mInterstitialAd reference will be null until
+                    // an ad is loaded.
+                    mInterstitialAd = interstitialAd
+                    setListener()
+                    mInterstitialAd?.show(this@FullScreenVideoActivity)
+                    Timber.d("onAdLoader")
+                }
 
-        mInterstitialAd.loadAd(AdRequest.Builder().build())
-        setListener()
+                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                    // Handle the error
+                    Timber.d("onAdFailedToLoad")
+                    mInterstitialAd = null
+                }
+            })
     }
 
+
     private fun setListener() {
-        mInterstitialAd.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                Timber.d("onAdLoaded")
-                mInterstitialAd.show()
+        mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+                Timber.d("Ad was dismissed.")
             }
 
-            override fun onAdFailedToLoad(errorCode: Int) {
-                Timber.d("onAdLoaded:${errorCode}")
+            override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+                Timber.d("Ad failed to show.")
             }
 
-            override fun onAdOpened() {
-                Timber.d("onAdOpened")
-            }
-
-            override fun onAdClicked() {
-                // Code to be executed when the user clicks on an ad.
-            }
-
-            override fun onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
-
-            override fun onAdClosed() {
-                // Code to be executed when the interstitial ad is closed.
+            override fun onAdShowedFullScreenContent() {
+                Timber.d("Ad showed fullscreen content.")
+                mInterstitialAd = null;
             }
         }
     }

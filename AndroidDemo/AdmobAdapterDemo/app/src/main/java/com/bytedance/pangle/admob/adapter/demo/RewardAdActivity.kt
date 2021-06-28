@@ -1,18 +1,16 @@
 package com.bytedance.pangle.admob.adapter.demo
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.*
 import com.google.android.gms.ads.rewarded.RewardItem
 import com.google.android.gms.ads.rewarded.RewardedAd
-import com.google.android.gms.ads.rewarded.RewardedAdCallback
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import timber.log.Timber
 
 class RewardAdActivity : AppCompatActivity() {
 
-    private lateinit var mRewardedAd: RewardedAd
+    private var mRewardedAd: RewardedAd? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,70 +23,59 @@ class RewardAdActivity : AppCompatActivity() {
 
         val testID = "ca-app-pub-3940256099942544/5224354917"
         val realID = "ca-app-pub-2748478898138855/2595714578"
-        mRewardedAd = RewardedAd(this, realID)
-        mRewardedAd.loadAd(
-            AdRequest.Builder().build(),
-            object : RewardedAdLoadCallback() {
-                override fun onRewardedAdLoaded() {
-                    Toast.makeText(this@RewardAdActivity, "onRewardedAdLoaded", Toast.LENGTH_LONG)
-                        .show()
-                    Timber.d("onRewardedAdLoaded")
-                    showRewardedVideo()
+
+        var adRequest = AdRequest.Builder().build()
+
+        RewardedAd.load(this, realID, adRequest, object : RewardedAdLoadCallback() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                Timber.d(adError?.message)
+                mRewardedAd = null
+            }
+
+            override fun onAdLoaded(rewardedAd: RewardedAd) {
+                Timber.d("Ad was loaded.")
+                mRewardedAd = rewardedAd
+                showRewardedVideo()
+            }
+        })
+
+    }
+
+
+    private fun showRewardedVideo() {
+
+        if (mRewardedAd != null) {
+            mRewardedAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                override fun onAdDismissedFullScreenContent() {
+                    Timber.d("Ad was dismissed.")
+                    // Don't forget to set the ad reference to null so you
+                    // don't show the ad a second time.
+                    mRewardedAd = null
                 }
 
-                override fun onRewardedAdFailedToLoad(errorCode: Int) {
-                    Toast.makeText(
-                        this@RewardAdActivity,
-                        "onRewardedAdFailedToLoad",
-                        Toast.LENGTH_LONG
-                    )
-                        .show()
-                    Timber.d("onRewardedAdFailedToLoad->${errorCode}")
+                override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+                    Timber.d("Ad failed to show.")
+                    // Don't forget to set the ad reference to null so you
+                    // don't show the ad a second time.
+                    mRewardedAd = null
+                }
+
+                override fun onAdShowedFullScreenContent() {
+                    Timber.d("Ad showed fullscreen content.")
+                    // Called when ad is dismissed.
+                }
+            }
+        }
+        mRewardedAd?.show(
+            this,
+            OnUserEarnedRewardListener() {
+                fun onUserEarnedReward(rewardItem: RewardItem) {
+                    var rewardAmount = rewardItem.amount
+                    Timber.d("TAG", "User earned the reward.")
                 }
             }
         )
-    }
 
-    private fun showRewardedVideo() {
-        if (mRewardedAd.isLoaded) {
-            mRewardedAd.show(
-                this,
-                object : RewardedAdCallback() {
-                    override fun onUserEarnedReward(
-                        rewardItem: RewardItem
-                    ) {
-                        Toast.makeText(
-                            this@RewardAdActivity,
-                            "onUserEarnedReward",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
 
-                    override fun onRewardedAdClosed() {
-                        Toast.makeText(
-                            this@RewardAdActivity,
-                            "onRewardedAdClosed",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-
-                    override fun onRewardedAdFailedToShow(errorCode: Int) {
-                        Toast.makeText(
-                            this@RewardAdActivity,
-                            "onRewardedAdFailedToShow",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-
-                    override fun onRewardedAdOpened() {
-                        Toast.makeText(
-                            this@RewardAdActivity,
-                            "onRewardedAdOpened",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-            )
-        }
     }
 }
