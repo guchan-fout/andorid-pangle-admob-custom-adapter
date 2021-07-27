@@ -9,7 +9,6 @@
   * [Pangle SDKとAdapterの導入と初期化](#import-pangle)
     * [Pangle SDKの導入と初期化](#import-sdk)
     * [Pangle Adaptersの導入](#import-adapter)
-    * [各広告フォマートに対応するアダプター](#adapter-file)
 * [Demo](#adapter-demo)
 
 <a name="setup-pangle"></a>
