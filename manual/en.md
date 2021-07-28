@@ -1,16 +1,21 @@
 # AdMob Custom Event Adapter for Pangle
 
-> Please set [Admob](https://developers.google.cn/admob/android/quick-start) in your app first.
+> Please set [Admob](https://developers.google.com/admob/android/quick-start) in your app first.
 
-* [Setup Pangle Platform](#setup-pangle)
-* [Add Pangle to AdMob's mediation](#add-pangle)
-* [Initialize Pangle SDK and Adapter](#import-pangle)
+* Required Steps for integration
+  * [Setup Pangle platform](#setup-pangle)
+  * [Add Pangle to AdMob's mediation](#add-pangle)
+    * [Adapters for different ad formats](#adapter-file)
+  * [Initialize Pangle SDK and adapters](#import-pangle)
+    * [Pangle SDK's integration and initialize](#import-sdk)
+    * [Embed Pangle adapters](#import-adapter)
+* [Demo](#adapter-demo)
 
 <a name="setup-pangle"></a>
 ## Setup Pangle Platform
 ### Create a Pangle account
 
-- Please create a [Pangle account](https://ad.oceanengine.com/union/media/login) if you do no have one.
+- Please create a [Pangle account](https://www.pangleglobal.com/) if you do no have one.
 
 
 ### Create an application and placements in Pangle
@@ -73,26 +78,157 @@
 - Add `{"placementID":"your slot ID"}` to Parameter.
     - **Parameter**: Add {"placementID":"[your placement ID on Pangle](#placementID)"} to Parameter , for example,`{"placementID":"1234567"}`
 
+    <img src="./pics/mediation-param.png" alt="drawing" width="400"/>
 
-<img src="./pics/mediation-param.png" alt="drawing" width="400"/>
+    - **Please make sure to use JSON to set Parameter. Or you need to customize adapter yourself.**
 
 
-**Please make sure to use JSON to set Parameter. Or you need to customize adapter yourself.**
+<a name="adapter-file"></a>
+### Class name for different ad formats
+- Reward Video Ads:`AdmobRewardVideoAdapter`
+- Interstitial(Fullscreen Video) Ads:`AdmobFullScreenVideoAdapter`
+- Banner Ads:`AdmobTemplateBannerAdapter`
+- Native Ads:`AdmobNativeFeedAdAdapter`
 
 <a name="import-pangle"></a>
 ## Initialize Pangle SDK and Adapter
 
-### Initialize Pangle SDK
-- Please refer to [Integrate Pangle SDK](https://www.pangleglobal.com/help/doc/6034a663511c57004360ff0f)
-and [Initialize Pangle SDK](https://www.pangleglobal.com/help/doc/6034a671bc3f04003eef4f9f) to intergrate Pangle SDK in your application.
+<a name="import-sdk"></a>
+### Import and Init Pangle SDK
+Add `url 'https://artifact.bytedance.com/repository/pangle'` maven in the `allprojects` section of your project-level `build.gradle`.
 
- * **Please use [app ID](#app-id) to initialize Pangle SDK.**
+```gradle
+allprojects {
+    repositories {
+      maven {
+        url 'https://artifact.bytedance.com/repository/pangle'
+      }
+    }
+}
+```
 
+Next, open the app-level `build.gradle` file for your app, add `implementation 'com.pangle.global:ads-sdk:x.x.x.x'` in "dependencies" section.
+In order to use the Android Advertising ID, we also recommend add  `com.google.android.gms:play-services-ads-identifier`.
+
+```gradle
+dependencies {
+    ...
+    implementation 'com.pangle.global:ads-sdk:3.7.1.4'
+    implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
+    ...
+
+}
+```
+
+Add following permissions and **provider** to your app's `AndroidManifest.xml`.
+
+> :warning: Please make sure to add **provider** or ad's loading will not work properly.
+
+
+```xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="xxxxxxxx">
+
+    <!--Required  permissions-->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- If there is a video ad and it is played with textureView, please be sure to add this, otherwise a black screen will appear -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        ...
+        <!--Required->
+        <provider
+            android:name="com.bytedance.sdk.openadsdk.multipro.TTMultiProvider"
+            android:authorities="${applicationId}.TTMultiProvider"
+            android:exported="false" />
+
+        ...
+
+    </application>
+
+</manifest>
+
+```
+
+Initialize Pangle SDK asynchronously is supported since the v3.5.0.0 SDK, please call `TTAdSdk.init(final Context var0, final TTAdConfig var1, final TTAdSdk.InitCallback var2)` to initializes the SDK before you send any ad requests. `init` only need to be called once per app’s lifecycle, we **strongly recommend** to do this on app launch.
+
+`TTAdSdk.InitCallback` will be informed about the result of the initialize.
+
+If you use TextureView for video ads, please set `useTextureView(true)` in the Builder and add add  `WAKE_LOCK`  permission in the manifest.
+
+
+```kotlin
+class PangleApplication: Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
+
+        initSdk()
+    }
+
+    private fun initSdk() {
+        TTAdSdk.init(this, buildAdConfig(), mInitCallback)
+    }
+
+    private val mInitCallback: TTAdSdk.InitCallback = object : TTAdSdk.InitCallback {
+        override fun success() {
+            Timber.d("init succeeded")
+        }
+
+        override fun fail(p0: Int, p1: String?) {
+            Timber.d("init failed. reason = $p1")
+        }
+    }
+
+    private fun buildAdConfig(): TTAdConfig {
+        return TTAdConfig.Builder()
+            // Please use your own appId,
+            .appId("your_app_id")
+            // Turn it on during the testing phase, you can troubleshoot with the log, remove it after launching the app
+            .debug(BuildConfig.DEBUG)
+            // The default setting is SurfaceView. We strongly recommend to set this to true.
+            // If using TextureView to play the video, please set this and add "WAKE_LOCK" permission in manifest
+            .useTextureView(true)
+            // Fields to indicate whether you are a child or an adult ，0:adult ，1:child
+            .coppa(0)
+            .build()
+    }
+```
+
+
+You also could check the initialization status with the method `TTAdSdk.isInitSuccess()`
+
+```kotlin
+private fun checkInitResult(): Boolean {
+   return TTAdSdk.isInitSuccess()
+}
+
+```
+
+Please refer to [Integrate Pangle SDK](https://www.pangleglobal.com/support/doc/6034a663511c57004360ff0f)
+and [Initialize Pangle SDK](https://www.pangleglobal.com/support/doc/6034a671bc3f04003eef4f9f) for manual integration and more information.
+
+
+<a name="import-adapter"></a>
 ### Embed Pangle Adapters
-- Click `SDK Integration` -> `SDK download`, you can find adapters for different ad formats from your Pangle platform,  embed them in your app and they can be used with no code changes. Also you can customize it for your use case.
+- Click `SDK Integration` -> `SDK download`, you can download adapters for different ad formats from your Pangle platform.
 <br>
 <img src="./pics/mediation.png" alt="drawing" width="400"/>
 <br>
 <img src="./pics/adapter-download.png" alt="drawing" width="400"/>
 
-- You can find simple use cases from [Demo](../AndroidDemo).
+Please unzip the file and add adapter files from Android folder into your application project. They can be used with no code changes. Also you can customize it for your use case.
+
+<img src="./pics/adapter-files.png" alt="drawing" width="400"/>
+
+
+<a name="adapter-demo"></a>
+## Demo
+- You can find simple use cases from [Demo](https://github.com/guchan-fout/andorid-pangle-admob-custom-adapter/tree/master/AndroidDemo).
