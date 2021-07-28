@@ -5,7 +5,7 @@
 * 導入に必要な手順
   * [Pangleプラットフォームのセットアップ](#setup-pangle)
   * [AdMobのmediationにPangleを追加](#add-pangle)
-    * [各広告フォマートに対応するアダプター](#adapter-file)
+    * [各広告フォマートに対応するクラス名](#adapter-file)
   * [Pangle SDKとAdapterの導入と初期化](#import-pangle)
     * [Pangle SDKの導入と初期化](#import-sdk)
     * [Pangle Adaptersの導入](#import-adapter)
