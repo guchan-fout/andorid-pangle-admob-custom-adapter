@@ -12,7 +12,7 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.bytedance.pangle.admob.adapter.demo.pangle.adapter.AdmobNativeFeedAdAdapter
+import com.google.ads.mediation.sample.customevent.adapter.AdmobNativeFeedAdAdapter
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest

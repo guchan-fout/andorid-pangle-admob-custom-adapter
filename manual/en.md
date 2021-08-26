@@ -5,10 +5,15 @@
 * Required Steps for integration
   * [Setup Pangle platform](#setup-pangle)
   * [Add Pangle to AdMob's mediation](#add-pangle)
-    * [Adapters for different ad formats](#adapter-file)
+    * [Create Mediation](#create-mediation)
+    * [Set Class Name and Parameters](#set-classname)
+      * [Class Name](#classname)
+      * [Parameters](#parameter)
   * [Initialize Pangle SDK and adapters](#import-pangle)
     * [Pangle SDK's integration and initialize](#import-sdk)
     * [Embed Pangle adapters](#import-adapter)
+      * [Gradle](#import-adapter-gradle)
+      * [Manual Download](#import-adapter-manual)
 * [Demo](#adapter-demo)
 
 <a name="setup-pangle"></a>
@@ -51,6 +56,7 @@
 <a name="add-pangle"></a>
 ## Add Pangle to AdMob's mediation
 
+<a name="create-mediation"></a>
 ### Create mediation
 
 - Click `Mediation` -> `CREATE MEDIATION GROUP` to create a mediation group.
@@ -69,26 +75,46 @@
 
 <img src="./pics/add-custom-event.png" alt="drawing" width="400"/>
 
+<a name="set-classname"></a>
+### Set Class Name and Parameter
 
-- Add adapter's **package + class name** to Class Name.
-  - **Class Name**: [package].[adaptername], for example,`com.bytedance.pangle.admob.adapter.demo.pangle.adapter.AdmobRewardVideoAdapter`
+Set `Class Name` and `Parameter` in the mediation setting.
+<img src="./pics/mediation-param.png" alt="drawing" width="400"/>
+
+<a name="classname"></a>
+#### Class Name
+If you are using [gradle](#import-adapter-gradle) to integrate our adapters, please copy the contents below to `Class Name` .
+
+|  Ad Type  |  Class Name  |
+| ---- | ---- |
+|  Reward Video Ads  |  com.google.ads.mediation.sample.customevent.adapter.AdmobRewardVideoAdapter  |
+|  Interstitial(Fullscreen Video) Ads  |  com.google.ads.mediation.sample.customevent.adapter.AdmobFullScreenVideoAdapter  |
+|  Banner Ads  |  com.google.ads.mediation.sample.customevent.adapter.AdmobTemplateBannerAdapter  |
+|  Native Ads  |  com.google.ads.mediation.sample.customevent.adapter.AdmobNativeFeedAdAdapter  |
+
+
+Else if you are integrating our adapters by **manual**, please add adapter's **package + adapter'class name** to `Class Name`.
+
+|  Ad Type  | adapter'class name (need add `package` of your app ) |
+| ---- | ---- |
+|  Reward Video Ads  |  AdmobRewardVideoAdapter  |
+|  Interstitial(Fullscreen Video) Ads  |  AdmobFullScreenVideoAdapter  |
+|  Banner Ads  |  AdmobTemplateBannerAdapter  |
+|  Native Ads  |  AdmobNativeFeedAdAdapter  |
+
+  - for example,`com.bytedance.pangle.admob.adapter.demo.pangle.adapter.AdmobRewardVideoAdapter`
 
   <img src="./pics/class-name.png" alt="drawing" width="400"/>
 
-- Add `{"placementID":"your slot ID"}` to Parameter.
-    - **Parameter**: Add {"placementID":"[your placement ID on Pangle](#placementID)"} to Parameter , for example,`{"placementID":"1234567"}`
+<a name="parameter"></a>
+#### Parameter
+Add `{"placementID":"your slot ID"}` to Parameter.
 
-    <img src="./pics/mediation-param.png" alt="drawing" width="400"/>
+- **Parameter**: Add {"placementID":"[your placement ID on Pangle](#placementID)"} to Parameter , for example,`{"placementID":"1234567"}`
 
-    - **Please make sure to use JSON to set Parameter. Or you need to customize adapter yourself.**
+- **Please make sure to use JSON to set Parameter. Or you need to customize adapter yourself.**
 
 
-<a name="adapter-file"></a>
-### Class name for different ad formats
-- Reward Video Ads:`AdmobRewardVideoAdapter`
-- Interstitial(Fullscreen Video) Ads:`AdmobFullScreenVideoAdapter`
-- Banner Ads:`AdmobTemplateBannerAdapter`
-- Native Ads:`AdmobNativeFeedAdAdapter`
 
 <a name="import-pangle"></a>
 ## Initialize Pangle SDK and Adapter
@@ -113,7 +139,7 @@ In order to use the Android Advertising ID, we also recommend add  `com.google.a
 ```gradle
 dependencies {
     ...
-    implementation 'com.pangle.global:ads-sdk:3.7.1.4'
+    implementation 'com.pangle.global:ads-sdk:3.8.1.2'
     implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
     ...
 
@@ -218,6 +244,15 @@ and [Initialize Pangle SDK](https://www.pangleglobal.com/support/doc/6034a671bc3
 
 <a name="import-adapter"></a>
 ### Embed Pangle Adapters
+
+<a name="import-adapter-gradle"></a>
+#### Gradle (preferred)
+From our adapter v1.4.0, we support gradle integration.
+
+Please open the app-level `build.gradle` file for your app, add `implementation 'com.pangle.global:adapter-for-admob:1.4.0'` in "dependencies" section.
+
+<a name="import-adapter-manual"></a>
+#### Manual download
 - Click `SDK Integration` -> `SDK download`, you can download adapters for different ad formats from your Pangle platform.
 <br>
 <img src="./pics/mediation.png" alt="drawing" width="400"/>

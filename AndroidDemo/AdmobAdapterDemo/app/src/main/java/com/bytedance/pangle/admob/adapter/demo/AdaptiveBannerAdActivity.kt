@@ -4,10 +4,9 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.DisplayMetrics
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.*
 import kotlinx.android.synthetic.main.activity_adaptive_banner_ad.*
+import timber.log.Timber
 
 class AdaptiveBannerAdActivity : AppCompatActivity() {
 
@@ -48,6 +47,34 @@ class AdaptiveBannerAdActivity : AppCompatActivity() {
             if (!initialLayoutComplete) {
                 initialLayoutComplete = true
                 loadBanner()
+            }
+        }
+
+        adaptiveBannerView.adListener = object: AdListener() {
+            override fun onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+                Timber.d("onAdLoaded admob")
+            }
+
+            override fun onAdFailedToLoad(adError : LoadAdError) {
+                // Code to be executed when an ad request fails.
+            }
+
+            override fun onAdOpened() {
+                // Code to be executed when an ad opens an overlay that
+                // covers the screen.
+                Timber.d("onAdOpened admob")
+            }
+
+            override fun onAdClicked() {
+                // Code to be executed when the user clicks on an ad.
+                Timber.d("onAdClicked admob")
+            }
+
+            override fun onAdClosed() {
+                Timber.d("onAdClosed admob")
+                // Code to be executed when the user is about to return
+                // to the app after tapping on an ad.
             }
         }
 

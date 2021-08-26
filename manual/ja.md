@@ -4,11 +4,16 @@
 
 * 導入に必要な手順
   * [Pangleプラットフォームのセットアップ](#setup-pangle)
-  * [AdMobのmediationにPangleを追加](#add-pangle)
-    * [各広告フォマートに対応するクラス名](#adapter-file)
+  * [AdMobのメディエーションにPangleを追加](#add-pangle)
+    * [メディエーションを作成](#create-mediation)
+    * [Class Name と Parametersを設定](#set-classname)
+      * [Class Name](#classname)
+      * [Parameters](#parameter)
   * [Pangle SDKとAdapterの導入と初期化](#import-pangle)
     * [Pangle SDKの導入と初期化](#import-sdk)
     * [Pangle Adaptersの導入](#import-adapter)
+      * [Gradle](#import-adapter-gradle)
+      * [手動導入](#import-adapter-manual)
 * [Demo](#adapter-demo)
 
 <a name="setup-pangle"></a>
@@ -67,27 +72,46 @@
 <br>
 <img src="./pics/add-custom-event.png" alt="drawing" width="400"/>
 
+<a name="set-classname"></a>
+### Class NameとParameterを設定
 
-- Adapterの`package name + class nameを`をメディエーション上の`Class Name`枠に追加します。
-  - **Class Name**: [package].[adapter], 例：`com.bytedance.pangle.admob.adapter.demo.pangle.adapter.AdmobRewardVideoAdapter`
+メディエーションの設定にて`Class Name` と `Parameter` を設定します。
+<img src="./pics/mediation-param.png" alt="drawing" width="400"/>
+
+<a name="classname"></a>
+#### Class Name
+
+[gradle](#import-adapter-gradle) を利用する場合、各広告タイプに対応する記載をそのまま `Class Name`にコピーしてください。
+
+|  広告タイプ  |  Class Name  |
+| ---- | ---- |
+|  動画リワード広告 |  com.google.ads.mediation.sample.customevent.adapter.AdmobRewardVideoAdapter  |
+|  インタースティシャル(フルスクリーン動画)広告  |  com.google.ads.mediation.sample.customevent.adapter.AdmobFullScreenVideoAdapter  |
+|  バナー広告  |  com.google.ads.mediation.sample.customevent.adapter.AdmobTemplateBannerAdapter  |
+|  ネイティブ広告  |  com.google.ads.mediation.sample.customevent.adapter.AdmobNativeFeedAdAdapter  |
+
+
+
+**手動導入**時に、Adapterの`package name + adapterのclass name`をメディエーション上の`Class Name`枠に追加します。
+- **Class Name**: [package].[adapter], 例：`com.bytedance.pangle.admob.adapter.demo.pangle.adapter.AdmobRewardVideoAdapter`
+
+|  広告タイプ  | adapterのclass name (必ず`package`もClass Nameに記載 ) |
+| ---- | ---- |
+|  動画リワード広告 |  AdmobRewardVideoAdapter  |
+|  インタースティシャル(フルスクリーン動画)広告  |  AdmobFullScreenVideoAdapter  |
+|  バナー広告  |  AdmobTemplateBannerAdapter  |
+|  ネイティブ広告  |  AdmobNativeFeedAdAdapter  |
 
   <br>
   <img src="./pics/class-name.png" alt="drawing" width="400"/>
 
-- `{"placementID":"your slotID"}`を`Parameter`枠に追加します。
+<a name="parameter"></a>
+#### Parameter
+`{"placementID":"your slotID"}`を`Parameter`枠に追加します。
 
    - **Parameter**: {"placementID":"[your placement ID on Pangle](#placementID)"}のJSON形式, 例：`{"placementID":"1234567"}`
 
    - **必ずJSON形式でパラメータを設定してください。または、アダプターを自分でカスタマイズする必要があります。**
-<br>
-<img src="./pics/mediation-param.png" alt="drawing" width="400"/>
-
-<a name="adapter-file"></a>
-### 各広告フォマートに対応するクラス名
-- 動画リワード広告:`AdmobRewardVideoAdapter`
-- インタースティシャル(フルスクリーン動画)広告:`AdmobFullScreenVideoAdapter`
-- バナー広告:`AdmobTemplateBannerAdapter`
-- ネイティブ広告:`AdmobNativeFeedAdAdapter`
 
 
 
@@ -116,7 +140,7 @@ allprojects {
 ```gradle
 dependencies {
     ...
-    implementation 'com.pangle.global:ads-sdk:3.7.1.4'
+    implementation 'com.pangle.global:ads-sdk:3.8.1.2'
     implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
     ...
 
@@ -221,6 +245,16 @@ private fun checkInitResult(): Boolean {
 
 <a name="import-adapter"></a>
 ### Pangle Adaptersの導入
+
+<a name="import-adapter-gradle"></a>
+#### Gradle (推奨)
+Adapter v1.4.0 からCocoaPodsよりの導入をサポートします。
+
+アプリレベルの`build.gradle`を開き、`dependencies` セクションに`implementation 'com.pangle.global:adapter-for-admob:1.4.0'` を追加すれば完了です。
+
+
+<a name="import-adapter-manual"></a>
+#### Manual download
 Pangleプラットフォームから、`SDK Integration` -> `SDK download`からアダプターファイルをダウンロードしてください。
 <br>
 <img src="./pics/mediation.png" alt="drawing" width="400"/>
