@@ -79,6 +79,7 @@
 ### Set Class Name and Parameter
 
 Set `Class Name` and `Parameter` in the mediation setting.
+
 <img src="./pics/mediation-param.png" alt="drawing" width="400"/>
 
 <a name="classname"></a>

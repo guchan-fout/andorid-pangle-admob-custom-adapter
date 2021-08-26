@@ -76,6 +76,7 @@
 ### Class NameとParameterを設定
 
 メディエーションの設定にて`Class Name` と `Parameter` を設定します。
+
 <img src="./pics/mediation-param.png" alt="drawing" width="400"/>
 
 <a name="classname"></a>
